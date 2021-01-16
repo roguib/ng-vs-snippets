@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc",
-    "run": "node ./build/index.js"
+    "run": "node ./build/index.js",
+    "execute": "tsc && node ./build/index.js"
   },
   "author": "roguib",
   "license": "ISC",
