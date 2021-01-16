@@ -1,0 +1,19 @@
+{
+  "name": "angular-vs-snippets",
+  "version": "1.0.0",
+  "description": "Automatic VS Code snippets generation of Angular projects",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "compile": "tsc",
+    "run": "node ./build/index.js"
+  },
+  "author": "roguib",
+  "license": "ISC",
+  "dependencies": {
+    "ts-node": "^9.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.21"
+  }
+}
