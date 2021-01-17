@@ -31,5 +31,3 @@ export const walker = (
   }
   return filesExploredPath;
 };
-
-console.log(walker(path.posix.resolve(), []));

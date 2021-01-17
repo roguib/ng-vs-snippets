@@ -4,17 +4,19 @@
   "description": "Automatic VS Code snippets generation of Angular projects",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "tsc",
     "run": "node ./build/index.js",
-    "execute": "tsc && node ./build/index.js"
+    "execute": "tsc && node ./build/index.js",
+    "test": "tsc && jest ./build/tests/*"
   },
   "author": "roguib",
   "license": "ISC",
   "dependencies": {
+    "@types/jest": "^26.0.20",
     "ts-node": "^9.1.1"
   },
   "devDependencies": {
-    "@types/node": "^14.14.21"
+    "@types/node": "^14.14.21",
+    "jest": "^26.6.3"
   }
 }
