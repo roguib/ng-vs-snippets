@@ -1,4 +1,5 @@
 const fs = require("fs");
+import * as logger from "./shared/logger";
 
 // TODO: Move it to another file
 // TODO: Read files synchronously
