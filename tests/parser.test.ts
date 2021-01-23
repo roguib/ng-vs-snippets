@@ -1,4 +1,4 @@
-import * as index from "../src/index";
+import * as parser from "../src/parser";
 
 test("Parses the contents of the candidate files and returns an array of File type", async () => {
   const result = [
@@ -30,7 +30,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
     },
   ];
   expect(
-    index.parser([
+    parser.parser([
       "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\main.component.ts",
     ])
   ).toStrictEqual(result);
