@@ -1,26 +1,8 @@
 const fs = require("fs");
+import { File, Input, Output } from "./shared/IFile";
 import * as logger from "./shared/logger";
 
-// TODO: Move it to another file
 // TODO: Read files synchronously
-export interface File {
-  fileLocation: string;
-  prefix: string;
-  componentName: string;
-  inputs: Array<Input>;
-  outputs: Array<Output>;
-}
-
-export interface Input {
-  inputName: string;
-  type: string;
-}
-
-export interface Output {
-  outputName: string;
-  type: string;
-}
-
 export const parser = (filePaths: Array<string>): Array<File> => {
   let result: Array<File> = [];
 
@@ -29,9 +11,8 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       encoding: "utf8",
       flag: "r",
     });
-    console.log(file);
     if (file?.match(/(@Component)/g)?.length == 0) {
-      console.log("No component defined in this file");
+      logger.log("No component defined in this file");
       continue;
     }
 
@@ -39,19 +20,21 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       /export(\s+)class(\s+)[a-zA-Z]+/g
     ) || [""];
     if (fileNameData.length === 0) {
+      logger.err("Component tag not defined by any class.");
       continue;
     }
     // we consider only one component per file
     // remove extra spacing
     fileNameData[0].replace(/(\s+)/, " ");
     const componentName: string = fileNameData[0].split(" ")[2];
-    console.log("Name of the component:", componentName);
+    logger.log("Name of the component:", componentName);
 
     // match returns a string not an array
     let componentSelectorData: Array<string> = file?.match(
       /selector:(\s+)\"[a-zA-Z-_]+\"/g
     ) || [""];
     if (componentSelectorData.length === 0) {
+      logger.err("Component doesn't define any selector.");
       continue;
     }
     componentSelectorData[0].replace(/(\s+)/, " ");
@@ -59,7 +42,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       .split(" ")[1]
       .replace('"', "")
       .replace('"', "");
-    console.log("Selector:", selector);
+    logger.log("Selector:", selector);
 
     // (@Input(\(\)|\(\'[A-Za-z]+\'\))(\s+)[A-Za-z]+(:(\s+)[A-Za-z]+(\;|(\s+))|\;|))|=(\s+)(\'[A-Za-z]+\')|([0-9]+)(\;|)
     // @Input() variableName: string = 'foo';
@@ -82,7 +65,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: tmp[2].replace(";", ""),
       });
     }
-    console.log("Inputs detected: ", inputs);
+    logger.log("Inputs detected:", inputs);
 
     let outputs: Array<Output> = [];
     // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
@@ -99,7 +82,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
           .replace("<", ""),
       });
     }
-    console.log("Outputs detected: ", outputs);
+    logger.log("Outputs detected:", outputs);
     result.push({
       fileLocation: filePath,
       prefix: selector,
@@ -108,6 +91,5 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       outputs: outputs,
     });
   }
-  console.log(result);
   return result;
 };

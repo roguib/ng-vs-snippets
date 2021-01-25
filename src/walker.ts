@@ -1,8 +1,9 @@
 import { Dirent } from "fs";
+import * as logger from "shared/logger";
+
 const fs = require("fs");
 const path = require("path");
 
-// TODO: move it to another file
 // TODO: Parse files synchronously
 export const walker = (
   root: string,
@@ -14,6 +15,7 @@ export const walker = (
   });
   for (let file of files) {
     if (file.isFile() && file.name.endsWith(".ts")) {
+      logger.log("Candidate file to contain component definition:", file.name);
       filesExploredPath = [...filesExploredPath, path.join(root, file.name)];
     } else if (
       file.isDirectory() &&
