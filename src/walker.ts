@@ -1,5 +1,5 @@
 import { Dirent } from "fs";
-import * as logger from "shared/logger";
+import * as logger from "./shared/logger";
 
 const fs = require("fs");
 const path = require("path");
