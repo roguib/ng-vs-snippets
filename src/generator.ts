@@ -14,6 +14,7 @@ const path = require("path");
 //     },
 // }
 export const generator = (files: Array<File>): void => {
+  // TODO: Add options (like in theme input) in case the string type contains | characters
   // scope will be html only for now
   let json = Object();
   for (const file of files) {

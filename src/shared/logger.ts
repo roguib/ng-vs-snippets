@@ -8,6 +8,7 @@ const warnPrefix = "\u001b[38;5;0m \u001b[48;5;11m WARNING: \x1b[0m ";
 const errorPrefix = "\u001b[41;1m ERROR: \x1b[0m ";
 const reset = "\x1b[0m";
 
+// TODO: Omit printing logs if certain flag is not written on the terminal
 export const log = (message: string, args?: any[] | any) => {
   console.log(logPrefix + message, args);
 };

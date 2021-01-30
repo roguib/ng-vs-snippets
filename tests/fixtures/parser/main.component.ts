@@ -6,6 +6,8 @@ import { Component, Input } from "@angular/core";
 })
 export class MainComponent {
   foo = false;
+  @Input() literalType1: 'type1' | 'type2' | 'type3';
+  @Input() literalType2: 'type1' | 'type2' | 'type3' = 'type1';
   @Input() appName: MediaModel;
   @Input() foo: TypeError;
   @Input() numberInput: number = 9;

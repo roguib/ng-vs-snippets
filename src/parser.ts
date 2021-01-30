@@ -44,9 +44,31 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       .replace('"', "");
     logger.log("Selector:", selector);
 
-    // @Input() variableName: type; and @Input() variableName: number = 9;
+    // input literal type
+    // @Input() variableName: 'type1' | 'type2' | 'type3'; and
+    // @Input() variableName: 'type1' | 'type2' | 'type3' = 'type1';
+    // notice we ignore the default value of the input in the regex
     let inputs: Array<Input> = [];
     let inputsData: Array<string> = file?.match(
+      /@Input\(\)(\s+)[A-Za-z0-9]+:((\s+)(('|")[A-Za-z0-9]+('|")((\s+)\|)))+(\s+)('|")[A-Za-z0-9]+('|")(;|:|)/g
+    ) || [""];
+    for (let input of inputsData) {
+      console.log(inputsData);
+      let tmp: Array<string> = input.replace(/(\s)+/g, " ").split(" ");
+      let type = tmp
+        .slice(2, tmp.length)
+        .join()
+        .replace(";", "")
+        .replace(/,/g, "");
+      inputs.push({
+        inputName: tmp[1].replace(":", ""),
+        type,
+      });
+    }
+
+    // @Input() variableName: type; and @Input() variableName: number = 9;
+    inputsData = [];
+    inputsData = file?.match(
       /@Input\(\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+((;|)|(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9]+(;|))/g
     ) || [""];
     for (let input of inputsData) {
