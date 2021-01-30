@@ -28,11 +28,27 @@ test("Parses the contents of the candidate files and returns an array of File ty
           type: "type",
         },
         {
+          inputName: "inputNameC",
+          type: undefined,
+        },
+        {
+          inputName: "inputNameD",
+          type: undefined,
+        },
+        {
           inputName: "withoutType",
           type: undefined,
         },
         {
           inputName: "withoutTypeNorSemicolon",
+          type: undefined,
+        },
+        {
+          inputName: "variableAssignedValue",
+          type: undefined,
+        },
+        {
+          inputName: "variableAssignedValueAndSemicolon",
           type: undefined,
         },
       ],

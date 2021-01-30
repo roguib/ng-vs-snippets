@@ -43,11 +43,6 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       .replace('"', "");
     logger.log("Selector:", selector);
 
-    // @Input() variableName: string = 'foo';
-    // @Input() variableName = 9;
-    // @Input('someName') variableName: string = 'foo';
-    // @Input() variableName: string;
-
     // @Input() variableName: type; and @Input() variableName: number = 9;
     let inputs: Array<Input> = [];
     let inputsData: Array<string> = file?.match(
@@ -77,8 +72,25 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       });
     }
 
-    // TODO: @Input() variableName = 9;
-    // @Input() variableName; and @Input() variableName
+    // @Input('inputNameC') varName = 'adv';
+    // @Input("inputNameD") varName = 2354;
+    inputsData = [];
+    inputsData = file?.match(
+      /@Input\(("|')[A-Za-z0-9]+("|')\)(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g
+    ) || [""];
+    for (let input of inputsData) {
+      let tmp: Array<string> = input.replace(/(\s+)/, " ").split(" ");
+      const inputName = (tmp[0].match(/('|")[A-Za-z]+('|")/g) || [
+        "",
+      ])[0].replace(/'|"/g, "");
+      inputs.push({
+        inputName,
+        type: undefined,
+      });
+    }
+
+    // @Input() variableName; and @Input() variableName. Also for now we will parse
+    // in this part of the code @Input() variableName = value and @Input() variableName = value;
     inputsData = [];
     inputsData = file?.match(/@Input\(\)(\s+)[A-Za-z0-9]+(;|)/g) || [""];
     for (let input of inputsData) {

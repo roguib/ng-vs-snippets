@@ -11,8 +11,12 @@ export class MainComponent {
   @Input() numberInput: number = 9;
   @Input("inputNameA") varName: type;
   @Input('inputNameB') varName: type;
+  @Input('inputNameC') varName = 'adv';
+  @Input("inputNameD") varName = 2354;
   @Input() withoutType;
   @Input() withoutTypeNorSemicolon;
+  @Input() variableAssignedValue = 9
+  @Input() variableAssignedValueAndSemicolon = value;
   @Output() buttonClick: EventEmitter<any> = new EventEmitter();
   @Output() fooVar: EventEmitter<number> = new EventEmitter();
 
