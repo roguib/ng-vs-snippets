@@ -2,6 +2,7 @@ const fs = require("fs");
 import { File, Input, Output } from "./shared/IFile";
 import * as logger from "./shared/logger";
 
+//TODO: Test in in other OS (github actions)
 // TODO: Read files synchronously
 export const parser = (filePaths: Array<string>): Array<File> => {
   let result: Array<File> = [];

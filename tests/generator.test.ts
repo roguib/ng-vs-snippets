@@ -1,3 +1,4 @@
+import { parser } from "~/parser";
 import * as generator from "../src/generator";
 const fs = require("fs");
 const path = require("path");
@@ -15,8 +16,10 @@ test("JSON file generation", async () => {
         { outputName: "buttonClick", type: "any" },
         { outputName: "fooVar", type: "number" },
       ],
-      fileLocation:
-        "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\main.component.ts",
+      fileLocation: path.join(
+        path.posix.resolve(),
+        "/tests/fixtures/parser/main.component.ts"
+      ),
     },
   ]);
   const expectedResult = '{"component": { "scope": "html", "prefix": "app-main", "body": [ "<app-main[appName]="$1"[foo]="$2" [buttonClick]="$3"[fooVar]="$4"></app-main>" ] } }'.replace(
