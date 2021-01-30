@@ -8,7 +8,7 @@ export interface File {
 
 export interface Input {
   inputName: string;
-  type: string;
+  type: string | undefined;
 }
 
 export interface Output {

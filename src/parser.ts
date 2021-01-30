@@ -24,7 +24,6 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       continue;
     }
     // we consider only one component per file
-    // remove extra spacing
     fileNameData[0].replace(/(\s+)/, " ");
     const componentName: string = fileNameData[0].split(" ")[2];
     logger.log("Name of the component:", componentName);
@@ -44,25 +43,53 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       .replace('"', "");
     logger.log("Selector:", selector);
 
-    // (@Input(\(\)|\(\'[A-Za-z]+\'\))(\s+)[A-Za-z]+(:(\s+)[A-Za-z]+(\;|(\s+))|\;|))|=(\s+)(\'[A-Za-z]+\')|([0-9]+)(\;|)
     // @Input() variableName: string = 'foo';
-    // @Input() variableName: number = 9;
     // @Input() variableName = 9;
     // @Input('someName') variableName: string = 'foo';
     // @Input() variableName: string;
-    // @Input() variableName;
-    // @Input() variableName
 
-    /// only @Input() variableName: type; for now
+    // @Input() variableName: type; and @Input() variableName: number = 9;
     let inputs: Array<Input> = [];
     let inputsData: Array<string> = file?.match(
-      /@Input\(\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+\;/g
+      /@Input\(\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+((;|)|(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9]+(;|))/g
     ) || [""];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/, " ").split(" ");
       inputs.push({
         inputName: tmp[1].replace(":", ""),
         type: tmp[2].replace(";", ""),
+      });
+    }
+
+    inputsData = [];
+    // @Input('inputName') varName: type; and @Input("inputName") varName: type
+    inputsData = file?.match(
+      /@Input\(('|")[A-Za-z]+('|")\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+\;/g
+    ) || [""];
+    for (let input of inputsData) {
+      let tmp: Array<string> = input.replace(/(\s+)/, " ").split(" ");
+      const inputName = (tmp[0].match(/('|")[A-Za-z]+('|")/g) || [
+        "",
+      ])[0].replace(/'|"/g, "");
+      inputs.push({
+        inputName,
+        type: tmp[2].replace(";", ""),
+      });
+    }
+
+    // TODO: @Input() variableName = 9;
+    // @Input() variableName; and @Input() variableName
+    inputsData = [];
+    inputsData = file?.match(/@Input\(\)(\s+)[A-Za-z0-9]+(;|)/g) || [""];
+    for (let input of inputsData) {
+      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+      const inputName = tmp[1].replace(";", "");
+      if (inputs.filter((elem) => elem.inputName == inputName).length > 0) {
+        continue;
+      }
+      inputs.push({
+        inputName,
+        type: undefined,
       });
     }
     logger.log("Inputs detected:", inputs);

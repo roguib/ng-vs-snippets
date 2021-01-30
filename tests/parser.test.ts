@@ -15,6 +15,26 @@ test("Parses the contents of the candidate files and returns an array of File ty
           inputName: "foo",
           type: "TypeError",
         },
+        {
+          inputName: "numberInput",
+          type: "number",
+        },
+        {
+          inputName: "inputNameA",
+          type: "type",
+        },
+        {
+          inputName: "inputNameB",
+          type: "type",
+        },
+        {
+          inputName: "withoutType",
+          type: undefined,
+        },
+        {
+          inputName: "withoutTypeNorSemicolon",
+          type: undefined,
+        },
       ],
       outputs: [
         {
