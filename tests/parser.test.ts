@@ -1,11 +1,14 @@
 import * as parser from "../src/parser";
+const path = require("path");
 
 test("Parses the contents of the candidate files and returns an array of File type", async () => {
   const result = [
     {
       componentName: "MainComponent",
-      fileLocation:
-        "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\main.component.ts",
+      fileLocation: path.join(
+        path.posix.resolve(),
+        "/tests/fixtures/parser/main.component.ts"
+      ),
       inputs: [
         {
           inputName: "appName",
@@ -67,7 +70,10 @@ test("Parses the contents of the candidate files and returns an array of File ty
   ];
   expect(
     parser.parser([
-      "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\main.component.ts",
+      path.join(
+        path.posix.resolve(),
+        "/tests/fixtures/parser/main.component.ts"
+      ),
     ])
   ).toStrictEqual(result);
 });

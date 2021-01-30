@@ -1,4 +1,3 @@
-import { parser } from "~/parser";
 import * as generator from "../src/generator";
 const fs = require("fs");
 const path = require("path");
