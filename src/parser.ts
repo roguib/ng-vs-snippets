@@ -2,6 +2,7 @@ const fs = require("fs");
 import { File, Input, Output } from "./shared/IFile";
 import * as logger from "./shared/logger";
 
+// TODO: Rename project ng-vs-snippets instead of angular-vs-snippets
 //TODO: Test in in other OS (github actions)
 // TODO: Read files synchronously
 export const parser = (filePaths: Array<string>): Array<File> => {
@@ -12,8 +13,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       encoding: "utf8",
       flag: "r",
     });
-    if (file?.match(/(@Component)/g)?.length == 0) {
-      logger.log("No component defined in this file");
+
+    if (
+      file?.match(/(@Component)/g)?.length == 0 &&
+      file?.match(/@Input/g)?.length == 0 &&
+      file?.match(/@Output/g)?.length == 0
+    ) {
+      logger.log("No component, Inputs or Outputs defined in this file");
       continue;
     }
 
