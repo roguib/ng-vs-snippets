@@ -1,4 +1,5 @@
 const fs = require("fs");
+import { runInThisContext } from "vm";
 import { File, Input, Output } from "./shared/IFile";
 import * as logger from "./shared/logger";
 
@@ -7,6 +8,8 @@ import * as logger from "./shared/logger";
 // TODO: Read files synchronously
 export const parser = (filePaths: Array<string>): Array<File> => {
   let result: Array<File> = [];
+  // a temporal variable used for storing @Inputs/@Outputs declared on a parent class
+  let tmp: Array<Partial<File>> = [];
 
   for (const filePath of filePaths) {
     const file: string = fs.readFileSync(filePath, {
@@ -14,8 +17,15 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       flag: "r",
     });
 
+    let containsComponentDef = false;
+    if (file?.match(/(@Component)/g)?.length || 0 > 0) {
+      containsComponentDef = true;
+      // TODO(extends) if defines a component and contains extends keyword, resolve the
+      // full path of the class that extends and save the full path in the extendedClassFilepath var
+    }
+
     if (
-      file?.match(/(@Component)/g)?.length == 0 &&
+      !containsComponentDef &&
       file?.match(/@Input/g)?.length == 0 &&
       file?.match(/@Output/g)?.length == 0
     ) {
@@ -35,20 +45,25 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     const componentName: string = fileNameData[0].split(" ")[2];
     logger.log("Name of the component:", componentName);
 
-    // match returns a string not an array
-    let componentSelectorData: Array<string> = file?.match(
-      /selector:(\s+)\"[a-zA-Z-_]+\"/g
-    ) || [""];
-    if (componentSelectorData.length === 0) {
-      logger.err("Component doesn't define any selector.");
-      continue;
+    let selector = "";
+    if (containsComponentDef) {
+      // match returns a string not an array
+      let componentSelectorData: Array<string> = file?.match(
+        /selector:(\s+)\"[a-zA-Z-_]+\"/g
+      ) || [""];
+      if (componentSelectorData.length === 0) {
+        logger.err(
+          "Component doesn't define any selector but contains @Component anotation."
+        );
+        continue;
+      }
+      componentSelectorData[0].replace(/(\s+)/, " ");
+      selector = componentSelectorData[0]
+        .split(" ")[1]
+        .replace('"', "")
+        .replace('"', "");
+      logger.log("Selector:", selector);
     }
-    componentSelectorData[0].replace(/(\s+)/, " ");
-    const selector: string = componentSelectorData[0]
-      .split(" ")[1]
-      .replace('"', "")
-      .replace('"', "");
-    logger.log("Selector:", selector);
 
     // input literal type
     // @Input() variableName: 'type1' | 'type2' | 'type3'; and
@@ -151,13 +166,29 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       });
     }
     logger.log("Outputs detected:", outputs);
-    result.push({
-      fileLocation: filePath,
-      prefix: selector,
-      componentName: componentName,
-      inputs: inputs,
-      outputs: outputs,
-    });
+
+    if (containsComponentDef) {
+      result.push({
+        fileLocation: filePath,
+        prefix: selector,
+        componentName: componentName,
+        inputs: inputs,
+        outputs: outputs,
+      });
+    } else {
+      tmp.push({
+        fileLocation: filePath,
+        inputs: inputs,
+        outputs: outputs,
+      });
+    }
   }
+  // Once we have in the result object all the component definitions we need
+  // to filter those components that extends classes with inputs/outputs and include
+  // those inputs/outputs from tmp into the main component definition
+  // we can create an optional property called extendedClassFilepath that will have
+  // the location of the file. If the location of the file matches the optional variable
+  // extendedClassFilepath then we need to add the inputs/outputs definitions from tmp
+  // see TODO(extends) for more concrete tasks that have to be done
   return result;
 };

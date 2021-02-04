@@ -4,6 +4,7 @@ export interface File {
   componentName: string;
   inputs: Array<Input>;
   outputs: Array<Output>;
+  // TODO(extends) extendedClassFilepath
 }
 
 export interface Input {
