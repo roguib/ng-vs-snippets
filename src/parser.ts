@@ -1,5 +1,6 @@
 const fs = require("fs");
-import { runInThisContext } from "vm";
+const path = require("path");
+
 import { File, Input, Output } from "./shared/IFile";
 import * as logger from "./shared/logger";
 
@@ -20,8 +21,6 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     let containsComponentDef = false;
     if (file?.match(/(@Component)/g)?.length || 0 > 0) {
       containsComponentDef = true;
-      // TODO(extends) if defines a component and contains extends keyword, resolve the
-      // full path of the class that extends and save the full path in the extendedClassFilepath var
     }
 
     if (
@@ -167,6 +166,25 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     }
     logger.log("Outputs detected:", outputs);
 
+    if (
+      file?.match(/export(\s+)class(\s+)[A-Za-z0-9]+(\s+)extends(\s+)[A-Za-z0-9]+/g)
+    ) {
+      // we should see if the extended class is in tmp and if not extract the inputs defined inside
+      let matchExtendedClass: Array<string> = file?.match(
+        /export(\s+)class(\s+)[A-Za-z0-9]+(\s+)extends(\s+)[A-Za-z0-9]+/g
+      ) || [""];
+      // resolve the path of the class
+      let extendedClass: string = matchExtendedClass[0].replace(/(\s+)/g, " ").split(" ")[4];
+      console.log('extendedClassName:', extendedClass);
+      let matchExtendedClassPath: Array<string> = file?.match(
+        /import(\s+){(\s+)[A-Za-z0-9]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."_-]+/g
+      ) || [""];
+      let extendedClassPath = path.join(path.dirname(filePath), matchExtendedClassPath[0].replace(/(\s+)/g, " ").replace(/"/g, "").split(" ")[5] + '.ts');
+      console.log('path:', extendedClassPath);
+      // TODO(extends) Store the extendedClassPath variable in extendedClassFilepath
+      // on the result array
+    }
+
     if (containsComponentDef) {
       result.push({
         fileLocation: filePath,
@@ -183,12 +201,15 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       });
     }
   }
-  // Once we have in the result object all the component definitions we need
+  // Once we have in the result variable all the component definitions we need
   // to filter those components that extends classes with inputs/outputs and include
   // those inputs/outputs from tmp into the main component definition
   // we can create an optional property called extendedClassFilepath that will have
   // the location of the file. If the location of the file matches the optional variable
   // extendedClassFilepath then we need to add the inputs/outputs definitions from tmp
   // see TODO(extends) for more concrete tasks that have to be done
+  // we're asuming there  won't be a lot of classes extending others
+  // we could make this algorithm more efficient by storing tmp variables on a dicc
+  // instead of iterating over the array every time
   return result;
 };

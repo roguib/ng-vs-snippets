@@ -1,10 +1,11 @@
 import { Component, Input } from "@angular/core";
+import { BaseComponent } from "./base.component";
 
 @Component({
   selector: "app-main",
   templateUrl: "./app.main.component.html",
 })
-export class MainComponent {
+export class MainComponent extends BaseComponent {
   foo = false;
   @Input() literalType1: 'type1' | 'type2' | 'type3';
   @Input() literalType2: 'type1' | 'type2' | 'type3' = 'type1';
