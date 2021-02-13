@@ -5,6 +5,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
   const result = [
     {
       componentName: "MainComponent",
+      extendedClassFilepath: undefined,
       fileLocation: path.join(
         path.posix.resolve(),
         "/tests/fixtures/parser/main.component.ts"
@@ -81,6 +82,10 @@ test("Parses the contents of the candidate files and returns an array of File ty
       path.join(
         path.posix.resolve(),
         "/tests/fixtures/parser/main.component.ts"
+      ),
+      path.join(
+        path.posix.resolve(),
+        "/tests/fixtures/parser/base.component.ts"
       ),
     ])
   ).toStrictEqual(result);

@@ -19,6 +19,7 @@ test("JSON file generation", async () => {
         path.posix.resolve(),
         "/tests/fixtures/parser/main.component.ts"
       ),
+      extendedClassFilepath: undefined
     },
   ]);
   const expectedResult = '{"component": { "scope": "html", "prefix": "app-main", "body": [ "<app-main[appName]="$1"[foo]="$2" [buttonClick]="$3"[fooVar]="$4"></app-main>" ] } }'.replace(
