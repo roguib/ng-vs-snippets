@@ -121,9 +121,10 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     // @Input('inputNameC') varName = 'adv';
     // @Input("inputNameD") varName = 2354;
     inputsData = [];
-    inputsData = file?.match(
-      /@Input\(("|')[A-Za-z0-9]+("|')\)(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g
-    ) || [];
+    inputsData =
+      file?.match(
+        /@Input\(("|')[A-Za-z0-9]+("|')\)(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g
+      ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = (tmp[0].match(/('|")[A-Za-z]+('|")/g) || [
@@ -154,9 +155,10 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     let outputs: Array<Output> = [];
     // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
-    let outputsData: Array<string> = file?.match(
-      /@Output\(\)(\s+)[A-Za-z]+:(\s+)EventEmitter<[A-Za-z]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g
-    ) || [];
+    let outputsData: Array<string> =
+      file?.match(
+        /@Output\(\)(\s+)[A-Za-z]+:(\s+)EventEmitter<[A-Za-z]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g
+      ) || [];
     for (let output of outputsData) {
       let tmp: Array<string> = output.replace(/(\s+)/g, " ").split(" ");
       outputs.push({
@@ -169,24 +171,26 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     }
     logger.log("Outputs detected:", outputs);
 
-    let extendedClassPath = "";
+    let extendedClassPath;
     if (
       file?.match(
         /export(\s+)class(\s+)[A-Za-z0-9]+(\s+)extends(\s+)[A-Za-z0-9]+/g
       )
     ) {
       // we should see if the extended class is in tmp and if not extract the inputs defined inside
-      let matchExtendedClass: Array<string> = file?.match(
-        /export(\s+)class(\s+)[A-Za-z0-9]+(\s+)extends(\s+)[A-Za-z0-9]+/g
-      ) || [];
+      let matchExtendedClass: Array<string> =
+        file?.match(
+          /export(\s+)class(\s+)[A-Za-z0-9]+(\s+)extends(\s+)[A-Za-z0-9]+/g
+        ) || [];
       // resolve the path of the class
       let extendedClass: string = matchExtendedClass[0]
         .replace(/(\s+)/g, " ")
         .split(" ")[4];
       console.log("extendedClassName:", extendedClass);
-      let matchExtendedClassPath: Array<string> = file?.match(
-        /import(\s+){(\s+)[A-Za-z0-9]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."_-]+/g
-      ) || [];
+      let matchExtendedClassPath: Array<string> =
+        file?.match(
+          /import(\s+){(\s+)[A-Za-z0-9]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."_-]+/g
+        ) || [];
       extendedClassPath = path.join(
         path.dirname(filePath),
         matchExtendedClassPath[0]
@@ -195,8 +199,6 @@ export const parser = (filePaths: Array<string>): Array<File> => {
           .split(" ")[5] + ".ts"
       );
       console.log("path:", extendedClassPath);
-      // TODO(extends) Store the extendedClassPath variable in extendedClassFilepath
-      // on the result array
     }
 
     if (containsComponentDef) {
@@ -206,26 +208,37 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         componentName: componentName,
         inputs: inputs,
         outputs: outputs,
-        extendedClassFilepath: undefined,
+        extendedClassFilepath: extendedClassPath || undefined,
       });
     } else {
       tmp.push({
         fileLocation: filePath,
         inputs: inputs,
         outputs: outputs,
-        extendedClassFilepath: extendedClassPath,
+        extendedClassFilepath: undefined,
       });
     }
   }
-  // Once we have in the result variable all the component definitions we need
-  // to filter those components that extends classes with inputs/outputs and include
-  // those inputs/outputs from tmp into the main component definition
-  // we can create an optional property called extendedClassFilepath that will have
-  // the location of the file. If the location of the file matches the optional variable
-  // extendedClassFilepath then we need to add the inputs/outputs definitions from tmp
-  // see TODO(extends) for more concrete tasks that have to be done
   // we're asuming there  won't be a lot of classes extending others
   // we could make this algorithm more efficient by storing tmp variables on a dicc
   // instead of iterating over the array every time
+  // TODO: Make it efficient, its O(n^m)!!!
+  for (let i = 0; i < result.length; ++i) {
+    if (result[i].extendedClassFilepath) {
+      for (let j = 0; j < tmp.length; ++j) {
+        if (result[i].extendedClassFilepath === tmp[j].fileLocation) {
+          result[i].inputs = [
+            ...result[i].inputs,
+            ...(tmp[j].inputs as []),
+          ] as Input[];
+          result[i].outputs = [
+            ...result[i].outputs,
+            ...(tmp[j].outputs as []),
+          ] as Output[];
+          break;
+        }
+      }
+    }
+  }
   return result;
 };

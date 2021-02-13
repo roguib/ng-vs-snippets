@@ -5,7 +5,8 @@ test("Parses the contents of the candidate files and returns an array of File ty
   const result = [
     {
       componentName: "MainComponent",
-      extendedClassFilepath: undefined,
+      extendedClassFilepath:
+        "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\base.component.ts",
       fileLocation: path.join(
         path.posix.resolve(),
         "/tests/fixtures/parser/main.component.ts"
@@ -62,6 +63,10 @@ test("Parses the contents of the candidate files and returns an array of File ty
         {
           inputName: "variableAssignedValueAndSemicolon",
           type: undefined,
+        },
+        {
+          inputName: "baseInput",
+          type: "'type1'|'type2'|'type3'",
         },
       ],
       outputs: [
