@@ -191,6 +191,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         file?.match(
           /import(\s+){(\s+)[A-Za-z0-9]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."_-]+/g
         ) || [];
+      // TODO: Document this in notes. Notice that by using path.join(path.dirname(fullComponentClassPath), relative path of the base path from ComponentClassPath) resolves into the full path of the base path
       extendedClassPath = path.join(
         path.dirname(filePath),
         matchExtendedClassPath[0]
