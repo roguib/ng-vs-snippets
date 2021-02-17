@@ -7,6 +7,7 @@
     "module": "commonjs",
     "target": "es2020",
     "outDir": "./build",
+    "sourceMap": true,
     "baseUrl": "./src",
     "paths": {
       "~/*": ["*"]
@@ -17,5 +18,5 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "build", "tests/fixtures"]
+  "exclude": ["node_modules", "build", "tests/fixtures", "coverage", "out"]
 }
