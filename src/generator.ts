@@ -24,16 +24,21 @@ export const generator = (files: Array<File>): void => {
     let inputs = "";
     let index = 1;
     for (let input of file.inputs) {
-      inputs += `[${input.inputName}]=\"$${index}\"`;
+      if (input.type?.indexOf('|') != -1 && input.type) {
+        inputs += ` [${input.inputName}]=\"$\{${index}\|${input.type.replace(/(\s)\|(\s)/g, ',').replace(/'/g, '')}\|\}\"`;
+      }
+      else {
+        inputs += ` [${input.inputName}]=\"$${index}\"`;
+      }
       ++index;
     }
     let outputs = "";
     for (let output of file.outputs) {
-      outputs += `[${output.outputName}]=\"$${index}\"`;
+      outputs += ` (${output.outputName})=\"$${index}\"`;
       ++index;
     }
     component.body = [
-      `<${file.prefix}` + inputs + " " + outputs + `></${file.prefix}>`,
+      `<${file.prefix}` + inputs + outputs + `></${file.prefix}>`,
     ];
     json = {
       ...json,

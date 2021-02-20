@@ -9,6 +9,7 @@ test("JSON file generation", async () => {
       prefix: "app-main",
       inputs: [
         { inputName: "appName", type: "MediaModel" },
+        { inputName: "var", type: "'type1' | 'type2'" },
         { inputName: "foo", type: "TypeError" },
       ],
       outputs: [
@@ -22,7 +23,7 @@ test("JSON file generation", async () => {
       extendedClassFilepath: undefined
     },
   ]);
-  const expectedResult = '{"component": { "scope": "html", "prefix": "app-main", "body": [ "<app-main[appName]="$1"[foo]="$2" [buttonClick]="$3"[fooVar]="$4"></app-main>" ] } }'.replace(
+  const expectedResult = '{"component": { "scope": "html", "prefix": "app-main", "body": [ "<app-main [appName]="$1" [var]="${2|type1,type2|}" [foo]="$3" (buttonClick)="$4" (fooVar)="$5"></app-main>" ] } }'.replace(
     /\s/g,
     ""
   );

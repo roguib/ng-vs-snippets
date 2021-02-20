@@ -7,8 +7,7 @@
     "compile": "tsc",
     "run": "node ./build/index.js",
     "execute": "tsc && node ./build/index.js",
-    "test": "tsc && jest ./build/tests/*",
-    "d-test": "tsc && jest ./tests/*"
+    "test": "tsc && jest ./tests/*"
   },
   "author": "roguib",
   "license": "ISC",
