@@ -5,8 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "compile": "tsc",
-    "run": "node ./build/index.js",
-    "execute": "tsc && node ./build/index.js",
+    "run": "node ./build/src/index.js",
+    "execute": "tsc && node ./build/src/index.js",
     "test": "tsc && jest ./tests/*"
   },
   "author": "roguib",

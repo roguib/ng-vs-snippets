@@ -13,7 +13,7 @@ const path = require("path");
 //         ]
 //     },
 // }
-export const generator = (files: Array<File>): void => {
+export const generator = (files: Array<File>, outputPath: string): void => {
   // TODO: Add options (like in theme input) in case the string type contains | characters
   // scope will be html only for now
   let json = Object();
@@ -45,7 +45,7 @@ export const generator = (files: Array<File>): void => {
       component,
     };
   }
-  const dir = path.join(path.posix.resolve(), "/out");
+  const dir = path.join(outputPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   }

@@ -16,17 +16,14 @@ export const walker = (
   for (let file of files) {
     if (file.isFile() && file.name.endsWith(".ts")) {
       logger.log("Candidate file to contain component definition:", file.name);
-      filesExploredPath = [...filesExploredPath, path.join(root, file.name)];
+      filesExploredPath.push(path.join(root, file.name));
     } else if (
       file.isDirectory() &&
       file.name != "node_modules" &&
       file.name != ".git"
     ) {
       // TODO: We should be able to specify which folders do we ignore
-      filesExploredPath = [
-        ...filesExploredPath,
-        ...walker(path.join(root, file.name), filesExploredPath),
-      ] as string[];
+      filesExploredPath.push(...walker(path.join(root, file.name), filesExploredPath));
     }
   }
   return filesExploredPath;
