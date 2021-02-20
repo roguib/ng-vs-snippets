@@ -92,6 +92,10 @@ test("Parses the contents of the candidate files and returns an array of File ty
         path.posix.resolve(),
         "/tests/fixtures/parser/base.component.ts"
       ),
+      path.join(
+        path.posix.resolve(),
+        "/tests/fixtures/parser/component.module.ts"
+      ),
     ])
   ).toStrictEqual(result);
 });

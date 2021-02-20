@@ -13,6 +13,17 @@
       "windows": {
         "program": "${workspaceFolder}/node_modules/jest/bin/jest"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "End to end execution",
+      "preLaunchTask": "npm: compile",
+      "program": "./build/src/index.js",
+      "args": ["--dir"],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "disableOptimisticBPs": true,
     }
   ]
 }

@@ -40,9 +40,8 @@ export const generator = (files: Array<File>, outputPath: string): void => {
     component.body = [
       `<${file.prefix}` + inputs + outputs + `></${file.prefix}>`,
     ];
-    json = {
-      ...json,
-      component,
+    json[file.componentName] = {
+      ...component
     };
   }
   const dir = path.join(outputPath);

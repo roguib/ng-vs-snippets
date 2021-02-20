@@ -38,7 +38,7 @@ export const run = async (args: string[]) => {
   let fileData: Array<File> = parser.parser(candidateFilePaths);
   generator.generator(
     fileData,
-    "C:Users\rogerDocumentsProyectosamazon-frontend.vscode"
+    path.join(workingDir, "/.vscode")
   );
 };
 

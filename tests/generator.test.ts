@@ -23,7 +23,7 @@ test("JSON file generation", async () => {
       extendedClassFilepath: undefined
     }
   ], path.join(path.posix.resolve(), "/out"));
-  const expectedResult = '{"component": { "scope": "html", "prefix": "app-main", "body": [ "<app-main [appName]="$1" [var]="${2|type1,type2|}" [foo]="$3" (buttonClick)="$4" (fooVar)="$5"></app-main>" ] } }'.replace(
+  const expectedResult = '{"MainComponent": { "scope": "html", "prefix": "app-main", "body": [ "<app-main [appName]="$1" [var]="${2|type1,type2|}" [foo]="$3" (buttonClick)="$4" (fooVar)="$5"></app-main>" ] } }'.replace(
     /\s/g,
     ""
   );

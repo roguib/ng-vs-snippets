@@ -19,14 +19,14 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     });
 
     let containsComponentDef = false;
-    if (file?.match(/(@Component)/g)?.length || 0 > 0) {
+    if (file?.match(/@Component/g)?.length || 0 > 0) {
       containsComponentDef = true;
     }
 
     if (
       !containsComponentDef &&
-      file?.match(/@Input/g)?.length == 0 &&
-      file?.match(/@Output/g)?.length == 0
+      file?.match(/@Input/g) == null &&
+      file?.match(/@Output/g) == null
     ) {
       logger.log("No component, Inputs or Outputs defined in this file");
       continue;
@@ -47,7 +47,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     if (containsComponentDef) {
       // match returns a string not an array
       let componentSelectorData: Array<string> =
-        file?.match(/selector:(\s+)\"[a-zA-Z-_]+\"/g) || [];
+        file?.match(/selector:(\s+)(\"|')[a-zA-Z-_]+(\"|')/g) || [];
       if (componentSelectorData.length === 0) {
         logger.err(
           "Component doesn't define any selector but contains @Component anotation."
@@ -61,6 +61,8 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         .replace('"', "");
       logger.log("Selector:", selector);
     }
+
+    // TODO: @Input() set foo(value: type) {};
 
     // input literal type
     // @Input() variableName: 'type1' | 'type2' | 'type3'; and
@@ -139,7 +141,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     // @Input() variableName; and @Input() variableName. Also for now we will parse
     // in this part of the code @Input() variableName = value and @Input() variableName = value;
     inputsData = [];
-    inputsData = file?.match(/@Input\(\)(\s+)[A-Za-z0-9]+(;|)/g) || [""];
+    inputsData = file?.match(/@Input\(\)(\s+)[A-Za-z0-9]+(;|)/g) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = tmp[1].replace(";", "");
@@ -189,7 +191,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       console.log("extendedClassName:", extendedClass);
       let matchExtendedClassPath: Array<string> =
         file?.match(
-          /import(\s+){(\s+)[A-Za-z0-9]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."_-]+/g
+          /import(\s+){(\s+)[A-Za-z0-9]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."'_-]+/g
         ) || [];
       // TODO: Document this in notes. Notice that by using path.join(path.dirname(fullComponentClassPath), relative path of the base path from ComponentClassPath) resolves into the full path of the base path
       extendedClassPath = path.join(
