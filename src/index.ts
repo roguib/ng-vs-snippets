@@ -18,7 +18,7 @@ const parseArgs = (args: string[]) => {
 
     if (arg == null) break;
 
-    if (arg.startsWith("--dir")) {
+    if (arg == "--dir") {
       const absPath = args.shift();
 
       if (absPath == null) break;

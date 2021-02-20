@@ -9,21 +9,29 @@ export const walker = (
   root: string,
   filesExploredPath: Array<string>
 ): Array<string> => {
-  const files: Dirent[] = fs.readdirSync(root, {
-    encoding: "utf8",
-    withFileTypes: true,
-  });
-  for (let file of files) {
-    if (file.isFile() && file.name.endsWith(".ts")) {
-      logger.log("Candidate file to contain component definition:", file.name);
-      filesExploredPath.push(path.join(root, file.name));
-    } else if (
-      file.isDirectory() &&
-      file.name != "node_modules" &&
-      file.name != ".git"
-    ) {
-      // TODO: We should be able to specify which folders do we ignore
-      filesExploredPath.push(...walker(path.join(root, file.name), filesExploredPath));
+  let pendingDir: Array<string> = [root];
+
+  while (pendingDir.length > 0) {
+    let currentDir = pendingDir.shift();
+
+    if (currentDir == null) break;
+
+    const files: Dirent[] = fs.readdirSync(currentDir, {
+      encoding: "utf8",
+      withFileTypes: true,
+    });
+
+    for (let file of files) {
+      if (file.isFile() && file.name.endsWith(".ts")) {
+        logger.log("Candidate file to contain component definition:", file.name);
+        filesExploredPath.push(path.join(currentDir, file.name));
+      } else if (
+        file.isDirectory() &&
+        file.name != "node_modules" &&
+        file.name != ".git"
+      ) {
+        pendingDir.push(path.join(currentDir, file.name));
+      }
     }
   }
   return filesExploredPath;
