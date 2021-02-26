@@ -57,8 +57,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       componentSelectorData[0].replace(/(\s+)/g, " ");
       selector = componentSelectorData[0]
         .split(" ")[1]
-        .replace('"', "")
-        .replace('"', "");
+        .replace(/('|")/g, "");
       logger.log("Selector:", selector);
     }
 
