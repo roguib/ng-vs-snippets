@@ -6,7 +6,10 @@ test("Parses the contents of the candidate files and returns an array of File ty
     {
       componentName: "MainComponent",
       extendedClassFilepath:
-        "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\base.component.ts",
+      path.join(
+        path.posix.resolve(),
+        "/tests/fixtures/parser/base.component.ts"
+      ),
       fileLocation: path.join(
         path.posix.resolve(),
         "/tests/fixtures/parser/main.component.ts"
