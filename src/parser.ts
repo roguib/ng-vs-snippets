@@ -4,7 +4,6 @@ const path = require("path");
 import { File, Input, Output } from "./shared/IFile";
 import * as logger from "./shared/logger";
 
-// TODO: Rename project ng-vs-snippets instead of angular-vs-snippets
 //TODO: Test in in other OS (github actions)
 // TODO: Read files synchronously
 export const parser = (filePaths: Array<string>): Array<File> => {

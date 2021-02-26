@@ -1,5 +1,5 @@
 {
-  "name": "angular-vs-snippets",
+  "name": "ng-VSnippets",
   "version": "0.1.0",
   "description": "Automatic VS Code snippets generation of Angular projects",
   "main": "index.ts",
