@@ -23,7 +23,7 @@ const parseArgs = (args: string[]) => {
 
       if (absPath == null) break;
 
-      workingDir = path.join(absPath, "/src");
+      workingDir = absPath;
     }
   }
 };
@@ -32,7 +32,7 @@ export const run = async (args: string[]) => {
   parseArgs(args);
   // const config = parseArgs(args);
   let candidateFilePaths: Array<string> = walker.walker(
-    workingDir || path.join(path.posix.resolve(), "src/"),
+    workingDir || path.posix.resolve(),
     []
   );
   let fileData: Array<File> = parser.parser(candidateFilePaths);
