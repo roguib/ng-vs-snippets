@@ -4,19 +4,17 @@
 
   "compilerOptions": {
     "lib": ["es2020"],
-    "module": "commonjs",
+    "module": "ES2020",
+    "moduleResolution": "node",
     "target": "es2020",
     "outDir": "./build",
     "sourceMap": true,
-    "baseUrl": "./src",
-    "paths": {
-      "~/*": ["*"]
-    },
-
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true
   },
+  "include": ["src"],
   "exclude": ["node_modules", "build", "tests/fixtures", "coverage", "out"]
 }

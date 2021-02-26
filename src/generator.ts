@@ -44,10 +44,11 @@ export const generator = (files: Array<File>, outputPath: string): void => {
       ...component
     };
   }
-  const dir = path.join(outputPath);
+  const dir = path.join(outputPath, "/out.code-snippets");
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
   }
-  fs.writeFileSync(dir + "/out.code-snippets", "");
-  fs.appendFileSync(dir + "/out.code-snippets", JSON.stringify(json, null, 4));
+  console.log("writing file in path:", dir);
+  fs.writeFileSync(dir, "");
+  fs.appendFileSync(dir, JSON.stringify(json, null, 4));
 };
