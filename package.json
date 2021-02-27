@@ -2,6 +2,18 @@
   "name": "ng-vs-snippets",
   "version": "0.1.0",
   "description": "Automatic VS Code snippets generation for Angular codebases",
+  "author": "roguib",
+  "license": "MIT",
+  "homepage": "https://github.com/roguib/ng-vs-snippets",
+  "repository": "github:roguib/ng-vs-snippets",
+  "bugs": "https://github.com/roguib/ng-vs-snippets/issues",
+  "keywords": [
+    "vs code",
+    "snippets",
+    "snippets generator",
+    "angular",
+    "vs snippets"
+  ],
   "main": "build/ng-vs-snippets.js",
   "types": "build/ng-vs-snippets.d.ts",
   "bin": {
@@ -13,8 +25,6 @@
     "run": "node ./build/index.js",
     "test": "npm run build:cjs && jest ./tests/*"
   },
-  "author": "roguib",
-  "license": "ISC",
   "dependencies": {
     "@types/jest": "^26.0.20",
     "rollup": "^2.40.0",
