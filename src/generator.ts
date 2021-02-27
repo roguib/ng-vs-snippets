@@ -45,8 +45,8 @@ export const generator = (files: Array<File>, outputPath: string): void => {
     };
   }
   const dir = path.join(outputPath, "/out.code-snippets");
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir);
+  if (!fs.existsSync(outputPath)) {
+    fs.mkdirSync(outputPath);
   }
   console.log("writing file in path:", dir);
   fs.writeFileSync(dir, "");

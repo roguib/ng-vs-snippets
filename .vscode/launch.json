@@ -18,9 +18,15 @@
       "type": "node",
       "request": "launch",
       "name": "End to end execution",
-      "preLaunchTask": "npm: compile",
-      "program": "./build/src/index.js",
-      "args": ["--dir"],
+      "preLaunchTask": "npm: build:cjs",
+      "program": "./build/ng-vs-snippets",
+      "args": 
+      [
+        "--dir",
+        "./src",
+        "--output",
+        "./.vscode"
+      ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "disableOptimisticBPs": true,

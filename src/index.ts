@@ -9,6 +9,7 @@ import { File } from "./shared/IFile";
 
 // TODO: Use a config interface
 let workingDir = "";
+let outputDir = "";
 
 const parseArgs = (args: string[]) => {
   // TODO: Include multiple options
@@ -25,6 +26,14 @@ const parseArgs = (args: string[]) => {
 
       workingDir = absPath;
     }
+
+    if (arg == "--output") {
+      const outputPath = args.shift();
+
+      if (outputPath == null) break;
+
+      outputDir = outputPath;
+    }
   }
 };
 
@@ -38,7 +47,7 @@ export const run = async (args: string[]) => {
   let fileData: Array<File> = parser.parser(candidateFilePaths);
   generator.generator(
     fileData,
-    path.join(workingDir, "/.vscode")
+    outputDir
   );
 };
 
