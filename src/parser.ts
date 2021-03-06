@@ -12,7 +12,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
   let tmp: Array<Partial<File>> = [];
 
   for (const filePath of filePaths) {
-    const file: string = fs.readFileSync(filePath, {
+    let file: string = fs.readFileSync(filePath, {
       encoding: "utf8",
       flag: "r",
     });
@@ -77,6 +77,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
+    file = file.replace(/@Input\(\)(\s+)[A-Za-z0-9]+:((\s+)(('|")[A-Za-z0-9]+('|")((\s+)\|)))+(\s+)('|")[A-Za-z0-9]+('|")(;|:|)/g, "");
 
     // @Input() variableName: type; and @Input() variableName: number = 9;
     inputsData = [];
@@ -92,6 +93,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: tmp[2].replace(";", ""),
       });
     }
+    file = file.replace(/@Input\(\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+((;|)|(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9]+(;|))/g, "");
 
     inputsData = [];
     // @Input('inputName') varName: type; and @Input("inputName") varName: type
@@ -110,6 +112,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: tmp[2].replace(";", ""),
       });
     }
+    file = file.replace(/@Input\(('|")[A-Za-z]+('|")\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+\;/g, "");
 
     // @Input('inputNameC') varName = 'adv';
     // @Input("inputNameD") varName = 2354;
@@ -128,6 +131,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
+    file = file.replace(/@Input\(("|')[A-Za-z0-9]+("|')\)(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g, "");
 
     //@Input() set foo(value) {}
     inputsData = [];
@@ -143,6 +147,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
+    file = file.replace(/@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+\)(\s+)/g, "");
 
     //@Input() set foo(value: type) {}
     inputsData = [];
@@ -159,6 +164,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
+    file = file.replace(/@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:(\s+)[A-Za-z0-9]+\)(\s+)/g, "");
 
     //@Input() set foo(value: type) {}
     inputsData = [];
@@ -179,6 +185,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
+    file = file.replace(/@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:((\s+)('|")[A-Za-z0-9]+('|")(\s+)\|)+(\s)('|")[A-Za-z0-9]+('|")\)/g, "");
 
     // @Input() variableName; and @Input() variableName. Also for now we will parse
     // in this part of the code @Input() variableName = value and @Input() variableName = value;
@@ -195,6 +202,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
+    file = file.replace(/@Input\(\)(\s+)[A-Za-z0-9]+(;|)/g, "");
     logger.log("Inputs detected:", inputs);
 
     let outputs: Array<Output> = [];
@@ -213,6 +221,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
           .replace("<", ""),
       });
     }
+    file = file.replace(/@Output\(\)(\s+)[A-Za-z]+:(\s+)EventEmitter<[A-Za-z]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g, "");
     logger.log("Outputs detected:", outputs);
 
     let extendedClassPath;
