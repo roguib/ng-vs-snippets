@@ -4,7 +4,7 @@ const path = require("path");
 import { File, Input, Output } from "./shared/IFile";
 import * as logger from "./shared/logger";
 
-//TODO: Test in in other OS (github actions)
+// TODO: Test in in other OS (github actions)
 // TODO: Read files synchronously
 export const parser = (filePaths: Array<string>): Array<File> => {
   let result: Array<File> = [];
@@ -54,17 +54,10 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         continue;
       }
       componentSelectorData[0].replace(/(\s+)/g, " ");
-      selector = componentSelectorData[0]
-        .split(" ")[1]
-        .replace(/('|")/g, "");
+      selector = componentSelectorData[0].split(" ")[1].replace(/('|")/g, "");
       logger.log("Selector:", selector);
     }
 
-    // TODO: @Input() set foo(value: type) {};
-
-    // input literal type
-    // @Input() variableName: 'type1' | 'type2' | 'type3'; and
-    // @Input() variableName: 'type1' | 'type2' | 'type3' = 'type1';
     // notice we ignore the default value of the input in the regex
     let inputs: Array<Input> = [];
     let inputsData: Array<string> =
@@ -133,6 +126,57 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       inputs.push({
         inputName,
         type: undefined,
+      });
+    }
+
+    //@Input() set foo(value) {}
+    inputsData = [];
+    inputsData =
+      file?.match(
+        /@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+\)(\s+)/g
+      ) || [];
+    for (let input of inputsData) {
+      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+      const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
+      inputs.push({
+        inputName,
+        type: undefined,
+      });
+    }
+
+    //@Input() set foo(value: type) {}
+    inputsData = [];
+    inputsData =
+      file?.match(
+        /@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:(\s+)[A-Za-z0-9]+\)(\s+)/g
+      ) || [];
+    for (let input of inputsData) {
+      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+      const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
+      const type = tmp[3].replace(/(\s+)/g, "").split(")")[0];
+      inputs.push({
+        inputName,
+        type,
+      });
+    }
+
+    //@Input() set foo(value: type) {}
+    inputsData = [];
+    inputsData =
+      file?.match(
+        /@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:((\s+)('|")[A-Za-z0-9]+('|")(\s+)\|)+(\s)('|")[A-Za-z0-9]+('|")\)/g
+      ) || [];
+    for (let input of inputsData) {
+      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+      const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
+      const type = tmp
+      .slice(3, tmp.length)
+      .join()
+      .replace(/'|"|\)/g, "")
+      .replace(/,/g, " ");
+      inputs.push({
+        inputName,
+        type,
       });
     }
 

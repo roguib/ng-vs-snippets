@@ -52,6 +52,18 @@ test("Parses the contents of the candidate files and returns an array of File ty
           type: undefined,
         },
         {
+          inputName: "Foo",
+          type: undefined,
+        },
+        {
+          inputName: "FooType",
+          type: "string",
+        },
+        {
+          inputName: "FooTypeLiteral",
+          type: "literal1 | literal2 | literal3",
+        },
+        {
           inputName: "withoutType",
           type: undefined,
         },

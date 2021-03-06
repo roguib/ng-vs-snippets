@@ -22,6 +22,15 @@ export class MainComponent extends BaseComponent {
   @Input() variableAssignedValueAndSemicolon = value;
   @Output() buttonClick: EventEmitter<any> = new EventEmitter();
   @Output() fooVar: EventEmitter<number> = new EventEmitter();
+  @Input() set Foo(value) {
+
+  }
+  @Input() set FooType(value: string) {
+    
+  }
+  @Input() set FooTypeLiteral(value: 'literal1' | 'literal2' | 'literal3') {
+    
+  }
 
   someRandomFunction(action) {
     action = "action";
