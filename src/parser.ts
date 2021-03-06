@@ -32,11 +32,12 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     }
 
     let fileNameData: Array<string> =
-      file?.match(/export(\s+)class(\s+)[a-zA-Z]+/g) || [];
+      file?.match(/export(\s+)class(\s+)[a-zA-Z0-9-_]+/g) || [];
     if (fileNameData.length === 0) {
       logger.err("Component tag not defined by any class.");
       continue;
     }
+
     // we consider only one component per file
     fileNameData[0].replace(/(\s+)/, " ");
     const componentName: string = fileNameData[0].split(" ")[2];
@@ -62,7 +63,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     let inputs: Array<Input> = [];
     let inputsData: Array<string> =
       file?.match(
-        /@Input\(\)(\s+)[A-Za-z0-9]+:((\s+)(('|")[A-Za-z0-9]+('|")((\s+)\|)))+(\s+)('|")[A-Za-z0-9]+('|")(;|:|)/g
+        /@Input\(\)(\s+)[a-zA-Z0-9-_]+:((\s+)(('|")[a-zA-Z0-9-_]+('|")((\s+)\|)))+(\s+)('|")[a-zA-Z0-9-_]+('|")(;|:|)/g
       ) || [];
     for (let input of inputsData) {
       console.log(inputsData);
@@ -77,13 +78,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)[A-Za-z0-9]+:((\s+)(('|")[A-Za-z0-9]+('|")((\s+)\|)))+(\s+)('|")[A-Za-z0-9]+('|")(;|:|)/g, "");
+    file = file.replace(/@Input\(\)(\s+)[a-zA-Z0-9-_]+:((\s+)(('|")[a-zA-Z0-9-_]+('|")((\s+)\|)))+(\s+)('|")[a-zA-Z0-9-_]+('|")(;|:|)/g, "");
 
     // @Input() variableName: type; and @Input() variableName: number = 9;
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+((;|)|(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9]+(;|))/g
+        /@Input\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+((;|)|(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[a-zA-Z0-9-_]+(;|))/g
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -93,17 +94,17 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: tmp[2].replace(";", ""),
       });
     }
-    file = file.replace(/@Input\(\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+((;|)|(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9]+(;|))/g, "");
+    file = file.replace(/@Input\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+((;|)|(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[a-zA-Z0-9-_]+(;|))/g, "");
 
     inputsData = [];
     // @Input('inputName') varName: type; and @Input("inputName") varName: type
     inputsData =
       file?.match(
-        /@Input\(('|")[A-Za-z]+('|")\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+\;/g
+        /@Input\(('|")[a-zA-Z0-9-_]+('|")\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\;/g
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = (tmp[0].match(/('|")[A-Za-z]+('|")/g) || [])[0].replace(
+      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [])[0].replace(
         /'|"/g,
         ""
       );
@@ -112,18 +113,18 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: tmp[2].replace(";", ""),
       });
     }
-    file = file.replace(/@Input\(('|")[A-Za-z]+('|")\)(\s+)[A-Za-z]+:(\s+)[A-Za-z]+\;/g, "");
+    file = file.replace(/@Input\(('|")[a-zA-Z0-9-_]+('|")\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\;/g, "");
 
     // @Input('inputNameC') varName = 'adv';
     // @Input("inputNameD") varName = 2354;
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(("|')[A-Za-z0-9]+("|')\)(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g
+        /@Input\(("|')[a-zA-Z0-9-_]+("|')\)(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = (tmp[0].match(/('|")[A-Za-z]+('|")/g) || [
+      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [
         "",
       ])[0].replace(/'|"/g, "");
       inputs.push({
@@ -131,13 +132,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
-    file = file.replace(/@Input\(("|')[A-Za-z0-9]+("|')\)(\s+)[A-Za-z0-9]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g, "");
+    file = file.replace(/@Input\(("|')[a-zA-Z0-9-_]+("|')\)(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g, "");
 
     //@Input() set foo(value) {}
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+\)(\s+)/g
+        /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+\)(\s+)/g
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -147,13 +148,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+\)(\s+)/g, "");
+    file = file.replace(/@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+\)(\s+)/g, "");
 
     //@Input() set foo(value: type) {}
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:(\s+)[A-Za-z0-9]+\)(\s+)/g
+        /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\)(\s+)/g
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -164,13 +165,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:(\s+)[A-Za-z0-9]+\)(\s+)/g, "");
+    file = file.replace(/@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\)(\s+)/g, "");
 
     //@Input() set foo(value: type) {}
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:((\s+)('|")[A-Za-z0-9]+('|")(\s+)\|)+(\s)('|")[A-Za-z0-9]+('|")\)/g
+        /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:((\s+)('|")[a-zA-Z0-9-_]+('|")(\s+)\|)+(\s)('|")[a-zA-Z0-9-_]+('|")\)/g
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -185,12 +186,12 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)set(\s+)[A-Za-z0-9]+\([A-Za-z0-9]+:((\s+)('|")[A-Za-z0-9]+('|")(\s+)\|)+(\s)('|")[A-Za-z0-9]+('|")\)/g, "");
+    file = file.replace(/@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:((\s+)('|")[a-zA-Z0-9-_]+('|")(\s+)\|)+(\s)('|")[a-zA-Z0-9-_]+('|")\)/g, "");
 
     // @Input() variableName; and @Input() variableName. Also for now we will parse
     // in this part of the code @Input() variableName = value and @Input() variableName = value;
     inputsData = [];
-    inputsData = file?.match(/@Input\(\)(\s+)[A-Za-z0-9]+(;|)/g) || [];
+    inputsData = file?.match(/@Input\(\)(\s+)[a-zA-Z0-9-_]+(;|)/g) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = tmp[1].replace(";", "");
@@ -202,14 +203,14 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)[A-Za-z0-9]+(;|)/g, "");
+    file = file.replace(/@Input\(\)(\s+)[a-zA-Z0-9-_]+(;|)/g, "");
     logger.log("Inputs detected:", inputs);
 
     let outputs: Array<Output> = [];
     // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
     let outputsData: Array<string> =
       file?.match(
-        /@Output\(\)(\s+)[A-Za-z]+:(\s+)EventEmitter<[A-Za-z]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g
+        /@Output\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)EventEmitter<[a-zA-Z0-9-_]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g
       ) || [];
     for (let output of outputsData) {
       let tmp: Array<string> = output.replace(/(\s+)/g, " ").split(" ");
@@ -221,19 +222,19 @@ export const parser = (filePaths: Array<string>): Array<File> => {
           .replace("<", ""),
       });
     }
-    file = file.replace(/@Output\(\)(\s+)[A-Za-z]+:(\s+)EventEmitter<[A-Za-z]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g, "");
+    file = file.replace(/@Output\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)EventEmitter<[a-zA-Z0-9-_]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g, "");
     logger.log("Outputs detected:", outputs);
 
     let extendedClassPath;
     if (
       file?.match(
-        /export(\s+)class(\s+)[A-Za-z0-9]+(\s+)extends(\s+)[A-Za-z0-9]+/g
+        /export(\s+)class(\s+)[a-zA-Z0-9-_]+(\s+)extends(\s+)[a-zA-Z0-9-_]+/g
       )
     ) {
       // we should see if the extended class is in tmp and if not extract the inputs defined inside
       let matchExtendedClass: Array<string> =
         file?.match(
-          /export(\s+)class(\s+)[A-Za-z0-9]+(\s+)extends(\s+)[A-Za-z0-9]+/g
+          /export(\s+)class(\s+)[a-zA-Z0-9-_]+(\s+)extends(\s+)[a-zA-Z0-9-_]+/g
         ) || [];
       // resolve the path of the class
       let extendedClass: string = matchExtendedClass[0]
@@ -242,7 +243,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       console.log("extendedClassName:", extendedClass);
       let matchExtendedClassPath: Array<string> =
         file?.match(
-          /import(\s+){(\s+)[A-Za-z0-9]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."'_-]+/g
+          /import(\s+){(\s+)[a-zA-Z0-9-_]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."'_-]+/g
         ) || [];
       // TODO: Document this in notes. Notice that by using path.join(path.dirname(fullComponentClassPath), relative path of the base path from ComponentClassPath) resolves into the full path of the base path
       extendedClassPath = path.join(

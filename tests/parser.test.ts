@@ -24,6 +24,10 @@ test("Parses the contents of the candidate files and returns an array of File ty
           type: "'type1'|'type2'|'type3'",
         },
         {
+          inputName: "literal_Type3",
+          type: "'type1'|'type2'|'type3'",
+        },
+        {
           inputName: "appName",
           type: "MediaModel",
         },
