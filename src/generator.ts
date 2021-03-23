@@ -1,20 +1,9 @@
 import { File } from "./shared/IFile";
-import * as logger from "./shared/logger";
+import logger from "./shared/logger";
 const fs = require("fs");
 const path = require("path");
-// {
-//     "Simple Button Component": {
-//         "scope": "html",
-//         "prefix": "gl-button",
-//         "body": [
-//             "<gl-button (click)=\"$1\" theme=\"${2|primary,secondary,success,danger,warning,info,light,dark,muted,white,link,outline-primary|}\" [outline]=\"${3|false,true|}\" size=\"${4|md,lg,sm|}\" [block]=\"${5|false,true|}\" [disabled]=\"${6|false,true|}\" iconLeft=\"$7\" iconRight=\"$8\">",
-//             "{{ '$7' | translate }}",
-//             "</gl-button>"
-//         ]
-//     },
-// }
+
 export const generator = (files: Array<File>, outputPath: string): void => {
-  // TODO: Add options (like in theme input) in case the string type contains | characters
   // scope will be html only for now
   let json = Object();
   for (const file of files) {
@@ -48,7 +37,7 @@ export const generator = (files: Array<File>, outputPath: string): void => {
   if (!fs.existsSync(outputPath)) {
     fs.mkdirSync(outputPath);
   }
-  console.log("writing file in path:", dir);
+  logger.log("writing file in path:", dir);
   fs.writeFileSync(dir, "");
   fs.appendFileSync(dir, JSON.stringify(json, null, 4));
 };
