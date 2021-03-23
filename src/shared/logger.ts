@@ -8,15 +8,37 @@ const warnPrefix = "\u001b[38;5;0m \u001b[48;5;11m WARNING: \x1b[0m ";
 const errorPrefix = "\u001b[41;1m ERROR: \x1b[0m ";
 const reset = "\x1b[0m";
 
-// TODO: Omit printing logs if certain flag is not written on the terminal
+let debuggerEnabled = false;
+
+export const enableDebugger = () => {
+  debuggerEnabled = true;
+}
+
+export const disableDebugger = () => {
+  debuggerEnabled = false;
+}
+
 export const log = (message: string, args?: any[] | any) => {
+  if (!debuggerEnabled) return; 
+
   console.log(logPrefix + message, args);
 };
 
 export const warn = (message: string, args?: any[] | any) => {
+  if (!debuggerEnabled) return; 
+
   console.log(warnPrefix + message, args);
 };
 
 export const err = (message: string, args?: any[] | any) => {
+  if (!debuggerEnabled) return; 
+
   console.log(errorPrefix + message, args);
+};
+
+export default {
+  log,
+  warn,
+  err,
+  enableDebugger,
 };
