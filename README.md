@@ -5,6 +5,18 @@
 
 Automatic VS Code snippets generation for Angular codebases. Seamlessly maintain up-to-date VS Code snippets of all of your code.
 
+Currently, we support snippet generation from the following Angular elements:
+
+<center>
+
+| Element   | Status                                    |
+|-----------|:-----------------------------------------:|
+| Component | :white_check_mark: Supported              |
+| Directive | :construction_worker: Not yet supported   |
+| Pipe      | :construction_worker: Not yet supported   |
+
+</center>
+
 ## Installation
 
 Install ```ng-vs-snippets``` as a dev-dependency in your Angular project. To do so, run:
