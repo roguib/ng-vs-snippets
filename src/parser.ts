@@ -2,7 +2,37 @@ const fs = require("fs");
 const path = require("path");
 
 import { File, Input, Output } from "./shared/IFile";
-import * as logger from "./shared/logger";
+import logger from "./shared/logger";
+
+// selectors
+const componentSelector = /export(\s+)class(\s+)[a-zA-Z0-9-_]+/g;
+const componentHTMLselector = /selector:(\s+)(\"|')[a-zA-Z-_]+(\"|')/g;
+
+// inputs
+// @Input() variableName; and @Input() variableName
+const regularInputSelector = /@Input\(\)(\s+)[a-zA-Z0-9-_]+(;|)/g;
+// @Input() variableName: type; and @Input() variableName: number = 9;
+const regularInputWithTypeSelector = /@Input\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+((;|)|(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[a-zA-Z0-9-_]+(;|))/g;
+// @Input('inputName') varName: type; and @Input("inputName") varName: type
+const customNameInputWithTypeSelector = /@Input\(('|")[a-zA-Z0-9-_]+('|")\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\;/g;
+const regularInputLiteralTypeSelector = /@Input\(\)(\s+)[a-zA-Z0-9-_]+:((\s+)(('|")[a-zA-Z0-9-_]+('|")((\s+)\|)))+(\s+)('|")[a-zA-Z0-9-_]+('|")(;|:|)/g;
+//@Input() set foo(value) {}
+const setterInputSelector = /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+\)(\s+)/g;
+//@Input() set foo(value: type) {}
+const setterInputWithTypeSelector = /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\)(\s+)/g;
+// @Input('inputNameC') varName = 'adv';
+const setterInputCustomNameSelector = /@Input\(("|')[a-zA-Z0-9-_]+("|')\)(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g;
+//@Input() set foo(value: 'type1' | 'type2') {}
+const setterInputLiteralTypeSelector = /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:((\s+)('|")[a-zA-Z0-9-_]+('|")(\s+)\|)+(\s)('|")[a-zA-Z0-9-_]+('|")\)/g;
+
+// outputs
+// @Output() buttonClick: EventEmitter<any> = new EventEmitter()
+const regularOutputSelector = /@Output\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)EventEmitter<[a-zA-Z0-9-_]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g;
+
+// other
+const extendedClassSelector = /export(\s+)class(\s+)[a-zA-Z0-9-_]+(\s+)extends(\s+)[a-zA-Z0-9-_]+/g;
+const extendedClassPathSelector = /import(\s+){(\s+)[a-zA-Z0-9-_]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."'_-]+/g;
+// TODO: class implementation with inputs/outputs defined
 
 // TODO: Test in in other OS (github actions)
 // TODO: Read files synchronously
@@ -32,7 +62,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     }
 
     let fileNameData: Array<string> =
-      file?.match(/export(\s+)class(\s+)[a-zA-Z0-9-_]+/g) || [];
+      file?.match(componentSelector) || [];
     if (fileNameData.length === 0) {
       logger.err("Component tag not defined by any class.");
       continue;
@@ -47,7 +77,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     if (containsComponentDef) {
       // match returns a string not an array
       let componentSelectorData: Array<string> =
-        file?.match(/selector:(\s+)(\"|')[a-zA-Z-_]+(\"|')/g) || [];
+        file?.match(componentHTMLselector) || [];
       if (componentSelectorData.length === 0) {
         logger.err(
           "Component doesn't define any selector but contains @Component anotation."
@@ -60,13 +90,14 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     }
 
     // notice we ignore the default value of the input in the regex
+    // Input() foo: 'type1' | 'type2'
     let inputs: Array<Input> = [];
     let inputsData: Array<string> =
       file?.match(
-        /@Input\(\)(\s+)[a-zA-Z0-9-_]+:((\s+)(('|")[a-zA-Z0-9-_]+('|")((\s+)\|)))+(\s+)('|")[a-zA-Z0-9-_]+('|")(;|:|)/g
+        regularInputLiteralTypeSelector
       ) || [];
     for (let input of inputsData) {
-      console.log(inputsData);
+      logger.log('inputs parsed:', inputsData);
       let tmp: Array<string> = input.replace(/(\s)+/g, " ").split(" ");
       let type = tmp
         .slice(2, tmp.length)
@@ -78,29 +109,29 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)[a-zA-Z0-9-_]+:((\s+)(('|")[a-zA-Z0-9-_]+('|")((\s+)\|)))+(\s+)('|")[a-zA-Z0-9-_]+('|")(;|:|)/g, "");
+    file = file.replace(regularInputLiteralTypeSelector, "");
 
     // @Input() variableName: type; and @Input() variableName: number = 9;
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+((;|)|(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[a-zA-Z0-9-_]+(;|))/g
+        regularInputWithTypeSelector
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      console.log("input data", inputsData);
+      logger.log("input data", inputsData);
       inputs.push({
         inputName: tmp[1].replace(":", ""),
         type: tmp[2].replace(";", ""),
       });
     }
-    file = file.replace(/@Input\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+((;|)|(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[a-zA-Z0-9-_]+(;|))/g, "");
+    file = file.replace(regularInputWithTypeSelector, "");
 
     inputsData = [];
     // @Input('inputName') varName: type; and @Input("inputName") varName: type
     inputsData =
       file?.match(
-        /@Input\(('|")[a-zA-Z0-9-_]+('|")\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\;/g
+        customNameInputWithTypeSelector
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -113,14 +144,14 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: tmp[2].replace(";", ""),
       });
     }
-    file = file.replace(/@Input\(('|")[a-zA-Z0-9-_]+('|")\)(\s+)[a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\;/g, "");
+    file = file.replace(customNameInputWithTypeSelector, "");
 
     // @Input('inputNameC') varName = 'adv';
     // @Input("inputNameD") varName = 2354;
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(("|')[a-zA-Z0-9-_]+("|')\)(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g
+        setterInputCustomNameSelector
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -132,13 +163,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
-    file = file.replace(/@Input\(("|')[a-zA-Z0-9-_]+("|')\)(\s+)[a-zA-Z0-9-_]+(\s+)=(\s+)[A-Za-z0-9"']+(;|)/g, "");
+    file = file.replace(setterInputCustomNameSelector, "");
 
     //@Input() set foo(value) {}
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+\)(\s+)/g
+        setterInputSelector
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -148,13 +179,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+\)(\s+)/g, "");
+    file = file.replace(setterInputSelector, "");
 
     //@Input() set foo(value: type) {}
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\)(\s+)/g
+        setterInputWithTypeSelector
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -165,13 +196,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:(\s+)[a-zA-Z0-9-_]+\)(\s+)/g, "");
+    file = file.replace(setterInputWithTypeSelector, "");
 
-    //@Input() set foo(value: type) {}
+    //@Input() set foo(value: 'type1' | 'type2') {}
     inputsData = [];
     inputsData =
       file?.match(
-        /@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:((\s+)('|")[a-zA-Z0-9-_]+('|")(\s+)\|)+(\s)('|")[a-zA-Z0-9-_]+('|")\)/g
+        setterInputLiteralTypeSelector
       ) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
@@ -186,12 +217,12 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)set(\s+)[a-zA-Z0-9-_]+\([a-zA-Z0-9-_]+:((\s+)('|")[a-zA-Z0-9-_]+('|")(\s+)\|)+(\s)('|")[a-zA-Z0-9-_]+('|")\)/g, "");
+    file = file.replace(setterInputLiteralTypeSelector, "");
 
     // @Input() variableName; and @Input() variableName. Also for now we will parse
     // in this part of the code @Input() variableName = value and @Input() variableName = value;
     inputsData = [];
-    inputsData = file?.match(/@Input\(\)(\s+)[a-zA-Z0-9-_]+(;|)/g) || [];
+    inputsData = file?.match(regularInputSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = tmp[1].replace(";", "");
@@ -203,14 +234,14 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         type: undefined,
       });
     }
-    file = file.replace(/@Input\(\)(\s+)[a-zA-Z0-9-_]+(;|)/g, "");
+    file = file.replace(regularInputSelector, "");
     logger.log("Inputs detected:", inputs);
 
     let outputs: Array<Output> = [];
     // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
     let outputsData: Array<string> =
       file?.match(
-        /@Output\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)EventEmitter<[a-zA-Z0-9-_]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g
+        regularOutputSelector
       ) || [];
     for (let output of outputsData) {
       let tmp: Array<string> = output.replace(/(\s+)/g, " ").split(" ");
@@ -222,28 +253,28 @@ export const parser = (filePaths: Array<string>): Array<File> => {
           .replace("<", ""),
       });
     }
-    file = file.replace(/@Output\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)EventEmitter<[a-zA-Z0-9-_]+>(\s+)=(\s+)new(\s+)EventEmitter\(\);/g, "");
+    file = file.replace(regularOutputSelector, "");
     logger.log("Outputs detected:", outputs);
 
     let extendedClassPath;
     if (
       file?.match(
-        /export(\s+)class(\s+)[a-zA-Z0-9-_]+(\s+)extends(\s+)[a-zA-Z0-9-_]+/g
+        extendedClassSelector
       )
     ) {
       // we should see if the extended class is in tmp and if not extract the inputs defined inside
       let matchExtendedClass: Array<string> =
         file?.match(
-          /export(\s+)class(\s+)[a-zA-Z0-9-_]+(\s+)extends(\s+)[a-zA-Z0-9-_]+/g
+          extendedClassSelector
         ) || [];
       // resolve the path of the class
       let extendedClass: string = matchExtendedClass[0]
         .replace(/(\s+)/g, " ")
         .split(" ")[4];
-      console.log("extendedClassName:", extendedClass);
+      logger.log("extendedClassName:", extendedClass);
       let matchExtendedClassPath: Array<string> =
         file?.match(
-          /import(\s+){(\s+)[a-zA-Z0-9-_]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."'_-]+/g
+          extendedClassPathSelector
         ) || [];
       // TODO: Document this in notes. Notice that by using path.join(path.dirname(fullComponentClassPath), relative path of the base path from ComponentClassPath) resolves into the full path of the base path
       extendedClassPath = path.join(
@@ -253,7 +284,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
           .replace(/"/g, "")
           .split(" ")[5] + ".ts"
       );
-      console.log("path:", extendedClassPath);
+      logger.log("path:", extendedClassPath);
     }
 
     if (containsComponentDef) {
