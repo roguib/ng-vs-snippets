@@ -31,9 +31,9 @@ export const warn = (message: string, args?: any[] | any) => {
 };
 
 export const err = (message: string, args?: any[] | any) => {
-  if (!debuggerEnabled) return; 
 
   console.log(errorPrefix + message, args);
+  process.exit();
 };
 
 export default {

@@ -7,11 +7,13 @@ import * as parser from "./parser";
 import * as generator from "./generator";
 import { File } from "./shared/IFile";
 import logger from "./shared/logger";
+import { ICLIConfig } from "./shared/ICLIConfig";
 
-// TODO: Use a config interface
-let workingDir = "";
-let outputDir = "";
-let debug = false;
+let config: ICLIConfig = {
+  workingDir: null,
+  outputDir: null,
+  debug: false,
+};
 
 const parseArgs = (args: string[]) => {
   // TODO: Include multiple options
@@ -25,7 +27,7 @@ const parseArgs = (args: string[]) => {
 
       if (absPath == null) break;
 
-      workingDir = absPath;
+      config.workingDir = absPath;
     }
 
     if (arg == "--output") {
@@ -33,30 +35,41 @@ const parseArgs = (args: string[]) => {
 
       if (outputPath == null) break;
 
-      outputDir = outputPath;
+      config.outputDir = outputPath;
     }
 
     if (arg == "--debug") {
-      debug = true;
+      config.debug = true;
     }
   }
 };
 
+export const verifyArgs = () => {
+  if (config.workingDir == null) {
+    logger.err("No working directory specified. Aborting.");
+  }
+
+  if (config.outputDir == null) {
+    logger.err("No output directory specified. Aborting.");
+  }
+}
+
 export const run = async (args: string[]) => {
   parseArgs(args);
+  verifyArgs();
   // const config = parseArgs(args);
 
-  if (debug) {
+  if (config.debug) {
     logger.enableDebugger();
   }
   let candidateFilePaths: Array<string> = walker.walker(
-    workingDir || path.posix.resolve(),
+    config.workingDir || path.posix.resolve(),
     []
   );
   let fileData: Array<File> = parser.parser(candidateFilePaths);
   generator.generator(
     fileData,
-    outputDir
+    config.outputDir as string
   );
 };
 

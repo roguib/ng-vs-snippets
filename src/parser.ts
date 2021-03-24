@@ -64,7 +64,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     let fileNameData: Array<string> =
       file?.match(componentSelector) || [];
     if (fileNameData.length === 0) {
-      logger.err("Component tag not defined by any class.");
+      logger.warn("Component tag not defined by any class.");
       continue;
     }
 
@@ -79,7 +79,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       let componentSelectorData: Array<string> =
         file?.match(componentHTMLselector) || [];
       if (componentSelectorData.length === 0) {
-        logger.err(
+        logger.warn(
           "Component doesn't define any selector but contains @Component anotation."
         );
         continue;
