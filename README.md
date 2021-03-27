@@ -3,7 +3,7 @@
 
 
 
-Automatic VS Code snippets generation for Angular codebases. Seamlessly maintain up-to-date VS Code snippets of all of your code.
+Automatic VS Code snippet file generation for Angular codebases. Seamlessly maintain up-to-date VS Code snippets of all of your code.
 
 Currently, we support snippet generation from the following Angular elements:
 
