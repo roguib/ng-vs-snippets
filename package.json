@@ -1,7 +1,7 @@
 {
   "name": "ng-vs-snippets",
   "version": "0.1.0",
-  "description": "Automatic VS Code snippets generation for Angular codebases",
+  "description": "Automatic VS Code snippet file generation for Angular codebases",
   "author": "roguib",
   "license": "MIT",
   "homepage": "https://github.com/roguib/ng-vs-snippets",

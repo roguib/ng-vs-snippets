@@ -3,7 +3,7 @@
 // https://www.lihaoyi.com/post/BuildyourownCommandLinewithANSIescapecodes.html
 // https://en.wikipedia.org/wiki/ANSI_escape_code
 
-const logPrefix = "\u001b[47;1m LOG: \x1b[0m ";
+const logPrefix = "\u001b[47;1m u \u001b[30;1m LOG: \x1b[0m ";
 const warnPrefix = "\u001b[38;5;0m \u001b[48;5;11m WARNING: \x1b[0m ";
 const errorPrefix = "\u001b[41;1m ERROR: \x1b[0m ";
 const reset = "\x1b[0m";
