@@ -1,5 +1,5 @@
 {
-  "name": "ng-vs-snippets",
+  "name": "@roguib/ng-vs-snippets",
   "version": "0.1.0",
   "description": "Automatic VS Code snippet file generation for Angular codebases",
   "author": "roguib",
