@@ -3,6 +3,7 @@ const path = require("path");
 
 import { File, Input, Output } from "./shared/IFile";
 import logger from "./shared/logger";
+import pathResolver from "./utils/path-resolver";
 
 // selectors
 const componentSelector = /export(\s+)class(\s+)[a-zA-Z0-9-_]+/g;
@@ -31,11 +32,11 @@ const regularOutputSelector = /@Output\(\)(\s+)[a-zA-Z0-9-_]+:(\s+)EventEmitter<
 
 // other
 const extendedClassSelector = /export(\s+)class(\s+)[a-zA-Z0-9-_]+(\s+)extends(\s+)[a-zA-Z0-9-_]+/g;
-const extendedClassPathSelector = /import(\s+){(\s+)[a-zA-Z0-9-_]+(\s+)}(\s+)from(\s+)[\/A-Za-z0-9."'_-]+/g;
+const extendedClassPathSelector = /import(\s+){(\s+)[a-zA-Z0-9-_]+(\s+)}(\s+)from(\s+)[\/\@A-Za-z0-9."'_-]+/g;
 // TODO: class implementation with inputs/outputs defined
 
-// TODO: Test in in other OS (github actions)
-// TODO: Read files synchronously
+// TODO: Test in other OS (github actions)
+// TODO: Read files asynchronously to improve performance?
 export const parser = (filePaths: Array<string>): Array<File> => {
   let result: Array<File> = [];
   // a temporal variable used for storing @Inputs/@Outputs declared on a parent class
@@ -61,8 +62,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       continue;
     }
 
-    let fileNameData: Array<string> =
-      file?.match(componentSelector) || [];
+    let fileNameData: Array<string> = file?.match(componentSelector) || [];
     if (fileNameData.length === 0) {
       logger.warn("Component tag not defined by any class.");
       continue;
@@ -93,11 +93,9 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     // Input() foo: 'type1' | 'type2'
     let inputs: Array<Input> = [];
     let inputsData: Array<string> =
-      file?.match(
-        regularInputLiteralTypeSelector
-      ) || [];
+      file?.match(regularInputLiteralTypeSelector) || [];
     for (let input of inputsData) {
-      logger.log('inputs parsed:', inputsData);
+      logger.log("inputs parsed:", inputsData);
       let tmp: Array<string> = input.replace(/(\s)+/g, " ").split(" ");
       let type = tmp
         .slice(2, tmp.length)
@@ -113,10 +111,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     // @Input() variableName: type; and @Input() variableName: number = 9;
     inputsData = [];
-    inputsData =
-      file?.match(
-        regularInputWithTypeSelector
-      ) || [];
+    inputsData = file?.match(regularInputWithTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       logger.log("input data", inputsData);
@@ -129,16 +124,11 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     inputsData = [];
     // @Input('inputName') varName: type; and @Input("inputName") varName: type
-    inputsData =
-      file?.match(
-        customNameInputWithTypeSelector
-      ) || [];
+    inputsData = file?.match(customNameInputWithTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [])[0].replace(
-        /'|"/g,
-        ""
-      );
+      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) ||
+        [])[0].replace(/'|"/g, "");
       inputs.push({
         inputName,
         type: tmp[2].replace(";", ""),
@@ -149,10 +139,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     // @Input('inputNameC') varName = 'adv';
     // @Input("inputNameD") varName = 2354;
     inputsData = [];
-    inputsData =
-      file?.match(
-        setterInputCustomNameSelector
-      ) || [];
+    inputsData = file?.match(setterInputCustomNameSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [
@@ -167,10 +154,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     //@Input() set foo(value) {}
     inputsData = [];
-    inputsData =
-      file?.match(
-        setterInputSelector
-      ) || [];
+    inputsData = file?.match(setterInputSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
@@ -183,10 +167,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     //@Input() set foo(value: type) {}
     inputsData = [];
-    inputsData =
-      file?.match(
-        setterInputWithTypeSelector
-      ) || [];
+    inputsData = file?.match(setterInputWithTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
@@ -200,18 +181,15 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     //@Input() set foo(value: 'type1' | 'type2') {}
     inputsData = [];
-    inputsData =
-      file?.match(
-        setterInputLiteralTypeSelector
-      ) || [];
+    inputsData = file?.match(setterInputLiteralTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
       const type = tmp
-      .slice(3, tmp.length)
-      .join()
-      .replace(/'|"|\)/g, "")
-      .replace(/,/g, " ");
+        .slice(3, tmp.length)
+        .join()
+        .replace(/'|"|\)/g, "")
+        .replace(/,/g, " ");
       inputs.push({
         inputName,
         type,
@@ -239,10 +217,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     let outputs: Array<Output> = [];
     // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
-    let outputsData: Array<string> =
-      file?.match(
-        regularOutputSelector
-      ) || [];
+    let outputsData: Array<string> = file?.match(regularOutputSelector) || [];
     for (let output of outputsData) {
       let tmp: Array<string> = output.replace(/(\s+)/g, " ").split(" ");
       outputs.push({
@@ -257,33 +232,23 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     logger.log("Outputs detected:", outputs);
 
     let extendedClassPath;
-    if (
-      file?.match(
-        extendedClassSelector
-      )
-    ) {
+    if (file?.match(extendedClassSelector)) {
       // we should see if the extended class is in tmp and if not extract the inputs defined inside
       let matchExtendedClass: Array<string> =
-        file?.match(
-          extendedClassSelector
-        ) || [];
+        file?.match(extendedClassSelector) || [];
       // resolve the path of the class
       let extendedClass: string = matchExtendedClass[0]
         .replace(/(\s+)/g, " ")
         .split(" ")[4];
       logger.log("extendedClassName:", extendedClass);
       let matchExtendedClassPath: Array<string> =
-        file?.match(
-          extendedClassPathSelector
-        ) || [];
-      // TODO: Document this in notes. Notice that by using path.join(path.dirname(fullComponentClassPath), relative path of the base path from ComponentClassPath) resolves into the full path of the base path
-      extendedClassPath = path.join(
-        path.dirname(filePath),
+        file?.match(extendedClassPathSelector) || [];
+
+      extendedClassPath = pathResolver.resolve(
+        filePath,
         matchExtendedClassPath[0]
-          .replace(/(\s+)/g, " ")
-          .replace(/"/g, "")
-          .split(" ")[5] + ".ts"
       );
+      
       logger.log("path:", extendedClassPath);
     }
 

@@ -51,6 +51,9 @@ export const resolve = (
         .replace(/"/g, "") + ".ts"
     );
 
+    // Notice that by calling path.join with a relative path of the base
+    // path from ComponentClassPath and the full path of the file resolves into the
+    // full path of the base path
     resolvedPath = path.join(
       path.posix.resolve(),
       pathToFile
