@@ -100,6 +100,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       let type = tmp
         .slice(2, tmp.length)
         .join()
+        .replace(/\"/g, "'")
         .replace(";", "")
         .replace(/,/g, "");
       inputs.push({
