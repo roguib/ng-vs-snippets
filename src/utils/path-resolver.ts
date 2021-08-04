@@ -1,14 +1,16 @@
 const path = require("path");
 const fs = require("fs");
 
+let tsconfigFile: {
+  compilerOptions: {
+    paths: any;
+  };
+} | null = null;
+
 /**
  * @param {string} filePath Path of the file that extends the base class
  * @param {string} importExpr The expression used to import the base class
  * @returns {string} An absolute path to the imported file
- */
-/**
- * TODO: Everytime resolve is being called, it has to open the tsconfig file. We should
- * store the definition of that file into the memory, so future access are faster.
  */
 export const resolve = (
   filePath: string,
@@ -29,27 +31,21 @@ export const resolve = (
   if (pathToFile.startsWith("@")) {
     const rootProjectDir = process.env.ROOT_PROJECT_PATH;
 
-    const tsconfigFile: any = JSON.parse(
-      fs.readFileSync(path.resolve(`${rootProjectDir}/tsconfig.json`), {
-        encoding: "utf8",
-        flag: "r",
-      })
-    );
+    if (tsconfigFile == null) {
+      tsconfigFile = JSON.parse(
+        fs.readFileSync(path.resolve(`${rootProjectDir}/tsconfig.json`), {
+          encoding: "utf8",
+          flag: "r",
+        })
+      );
+    }
 
     let compilerOptionsPathsKey = pathToFile.substr(0, pathToFile.indexOf("/")),
       compilerOptionsPathsValue = "";
-    if (compilerOptionsPathsKey + "/*" in tsconfigFile.compilerOptions.paths) {
+    if (compilerOptionsPathsKey + "/*" in tsconfigFile?.compilerOptions.paths) {
       compilerOptionsPathsValue =
-        tsconfigFile.compilerOptions.paths[compilerOptionsPathsKey + "/*"];
+        tsconfigFile?.compilerOptions.paths[compilerOptionsPathsKey + "/*"];
     } // TODO: else throw an exception
-
-    const aux = path.join(
-      path.posix.resolve(),
-      pathToFile
-        .replace(compilerOptionsPathsKey, compilerOptionsPathsValue)
-        .replace(/(\s+)/g, " ")
-        .replace(/"/g, "") + ".ts"
-    );
 
     // Notice that by calling path.join with a relative path of the base
     // path from ComponentClassPath and the full path of the file resolves into the
