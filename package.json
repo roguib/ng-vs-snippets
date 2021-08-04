@@ -22,7 +22,7 @@
   "scripts": {
     "build:cjs": "rollup -c",
     "check": "tsc",
-    "run": "node ./build/index.js",
+    "run": "node ./build/@roguib/ng-vs-snippets.js",
     "test": "npm run build:cjs && jest ./tests/*"
   },
   "dependencies": {
