@@ -115,7 +115,6 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     inputsData = file?.match(regularInputWithTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      logger.log("input data", inputsData);
       inputs.push({
         inputName: tmp[1].replace(":", ""),
         type: tmp[2].replace(";", ""),
@@ -263,8 +262,15 @@ export const parser = (filePaths: Array<string>): Array<File> => {
         extendedClassFilepath: extendedClassPath || undefined,
       });
     } else {
+      /**
+       * TODO: Instead of working with relative paths and converting them
+       * to absolute when needed, we can start the exec by transforming every
+       * relative path to absolute, and then clean up the resolve calls in the program
+       * that transforms the code into an spaguetti one. Also it could help by reducing
+       * the amount of times we call path.join(path.posix.resolve(), path);
+       */
       tmp.push({
-        fileLocation: filePath,
+        fileLocation: path.resolve(filePath),
         inputs: inputs,
         outputs: outputs,
         extendedClassFilepath: undefined,

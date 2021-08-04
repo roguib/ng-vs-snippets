@@ -14,10 +14,10 @@
     "angular",
     "vs snippets"
   ],
-  "main": "build/ng-vs-snippets.js",
-  "types": "build/ng-vs-snippets.d.ts",
+  "main": "build/@roguib/ng-vs-snippets.js",
+  "types": "build/@roguib/ng-vs-snippets.d.ts",
   "bin": {
-    "ng-vs-snippets": "build/ng-vs-snippets.js"
+    "ng-vs-snippets": "build/@roguib/ng-vs-snippets.js"
   },
   "scripts": {
     "build:cjs": "rollup -c",

@@ -21,8 +21,13 @@ export const resolve = (
    * @returns {string} The the path in the import expression
    */
   const extractPathFromImportExpr = (importExpr: string): string => {
-    let path = importExpr.substr(importExpr.indexOf('"') + 1);
-    return path.replace(/\"/g, "");
+    let pathIndex = importExpr.indexOf('"');
+
+    if (pathIndex === -1) {
+      pathIndex = importExpr.indexOf("'");
+    }
+    let path = importExpr.substr(pathIndex + 1);
+    return path.replace(/\"/g, "").replace(/'/g, "");
   };
 
   let resolvedPath = "",
@@ -41,11 +46,16 @@ export const resolve = (
     }
 
     let compilerOptionsPathsKey = pathToFile.substr(0, pathToFile.indexOf("/")),
-      compilerOptionsPathsValue = "";
+      compilerOptionsPathsValue: Array<string> = [""];
     if (compilerOptionsPathsKey + "/*" in tsconfigFile?.compilerOptions.paths) {
       compilerOptionsPathsValue =
         tsconfigFile?.compilerOptions.paths[compilerOptionsPathsKey + "/*"];
     } // TODO: else throw an exception
+
+    compilerOptionsPathsValue[0] = compilerOptionsPathsValue[0].replace(
+      "/*",
+      ""
+    );
 
     // Notice that by calling path.join with a relative path of the base
     // path from ComponentClassPath and the full path of the file resolves into the
@@ -53,7 +63,7 @@ export const resolve = (
     resolvedPath = path.join(
       path.posix.resolve(),
       pathToFile
-        .replace(compilerOptionsPathsKey, compilerOptionsPathsValue)
+        .replace(compilerOptionsPathsKey, compilerOptionsPathsValue[0])
         .replace(/(\s+)/g, " ")
         .replace(/"/g, "") + ".ts"
     );
