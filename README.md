@@ -22,7 +22,7 @@ Currently, we support snippet generation from the following Angular elements:
 Install ```ng-vs-snippets``` as a dev-dependency in your Angular project. To do so, run:
 
 ```
-npm i ng-vs-snippets --save-dev
+npm i @roguib/ng-vs-snippets --save-dev
 ```
 
 Create a ```package.json``` script to extract snippets from your codebase:
