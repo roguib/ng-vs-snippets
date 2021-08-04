@@ -19,17 +19,11 @@
       "request": "launch",
       "name": "End to end execution",
       "preLaunchTask": "npm: build:cjs",
-      "program": "./build/ng-vs-snippets",
-      "args": 
-      [
-        "--dir",
-        "./src",
-        "--output",
-        "./.vscode"
-      ],
+      "program": "./build/@roguib/ng-vs-snippets.js",
+      "args": ["--dir", "./src", "--output", "./.vscode"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
-      "disableOptimisticBPs": true,
+      "disableOptimisticBPs": true
     }
   ]
 }
