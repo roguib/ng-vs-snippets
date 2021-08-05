@@ -1,6 +1,4 @@
-const fs = require("fs");
 const path = require("path");
-const readline = require("readline");
 const argv = process.argv;
 import * as walker from "./walker";
 import * as parser from "./parser";
@@ -17,6 +15,9 @@ let config: ICLIConfig = {
 
 const parseArgs = (args: string[]) => {
   // TODO: Include multiple options
+
+  logger.log("args:", args);
+
   while (args.length > 0) {
     const arg = args.shift();
 
@@ -52,25 +53,24 @@ export const verifyArgs = () => {
   if (config.outputDir == null) {
     logger.err("No output directory specified. Aborting.");
   }
-}
+};
 
 export const run = async (args: string[]) => {
   parseArgs(args);
   verifyArgs();
-  // const config = parseArgs(args);
 
   if (config.debug) {
     logger.enableDebugger();
   }
+
+  process.env.ROOT_PROJECT_PATH = config.workingDir || path.posix.resolve();
+
   let candidateFilePaths: Array<string> = walker.walker(
-    config.workingDir || path.posix.resolve(),
+    process.env.ROOT_PROJECT_PATH as string,
     []
   );
   let fileData: Array<File> = parser.parser(candidateFilePaths);
-  generator.generator(
-    fileData,
-    config.outputDir as string
-  );
+  generator.generator(fileData, config.outputDir as string);
 };
 
 run(argv.slice(2, argv.length));
