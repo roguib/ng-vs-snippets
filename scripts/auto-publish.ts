@@ -1,11 +1,19 @@
 const fs = require("fs");
 const readline = require("readline");
+const util = require("util");
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
 });
 const iterator = rl[Symbol.asyncIterator]();
 const prettier = require("prettier");
+const exec = util.promisify(require("child_process").exec);
+
+const execute = (
+  command: string
+): Promise<{ stdout: string; stderr; string }> => {
+  return exec(command);
+};
 
 const autoPublish = async (): Promise<void> => {
   console.log(
@@ -22,12 +30,13 @@ const autoPublish = async (): Promise<void> => {
     version = await iterator.next();
     if (version.value != "M" && version.value != "m" && version.value != "p") {
       throw Error(
-        "Published version should be Major(M) / Minor(m) / Patch(p). Aborting"
+        "Published version should be Major(M) / Minor(m) / Patch(p). Aborting."
       );
     }
   } catch (error) {
     throw error;
   }
+  rl.close();
 
   console.log("Updating package.json");
   let packageJson: any = undefined;
@@ -40,7 +49,7 @@ const autoPublish = async (): Promise<void> => {
     );
   } catch (error) {
     console.log(
-      "An error has occured while trying to read package.json file. Aborting"
+      "An error has occured while trying to read package.json file. Aborting."
     );
     throw error;
   }
@@ -59,7 +68,8 @@ const autoPublish = async (): Promise<void> => {
       break;
   }
   vArr[index] = (+vArr[index] + 1).toString();
-  packageJson.version = vArr.join(".");
+  const newVersion = vArr.join(".");
+  packageJson.version = newVersion;
   try {
     console.log("package.json updated. Running prettier formatter.");
     fs.writeFileSync(
@@ -75,16 +85,33 @@ const autoPublish = async (): Promise<void> => {
     );
   } catch (error) {
     console.log(
-      "An error has occured while trying to update package.json file. Aborting"
+      "An error has occured while trying to update package.json file. Aborting."
     );
     throw error;
   }
-  // TODO
-  console.log("Pushing the new version into GitHub");
 
-  // TODO
-  console.log("Publishing the new version to npm");
-  rl.close();
+  console.log("Building the latest version of the library.");
+  try {
+    await execute(packageJson.scripts["build:cjs"]);
+  } catch (error) {
+    throw error;
+  }
+
+  console.log("Pushing the new version into GitHub.");
+  try {
+    await execute("git add .");
+    await execute(`git commit -m \"${newVersion}\"`);
+    await execute('git push"');
+  } catch (error) {
+    throw error;
+  }
+
+  console.log("Publishing the new version to npm.");
+  try {
+    await execute("npm publish");
+  } catch (error) {
+    throw error;
+  }
   return;
 };
 
