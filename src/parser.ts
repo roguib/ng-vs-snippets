@@ -55,122 +55,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       logger.log("Selector:", selector);
     }
 
-    // notice we ignore the default value of the input in the regex
-    // Input() foo: 'type1' | 'type2'
-    let inputs: Array<Input> = [];
-    let inputsData: Array<string> = file?.match(REGEX_SELECTORS.regularInputLiteralTypeSelector) || [];
-    for (let input of inputsData) {
-      logger.log("inputs parsed:", inputsData);
-      let tmp: Array<string> = input.replace(/(\s)+/g, " ").split(" ");
-      let type = tmp.slice(2, tmp.length).join().replace(/\"/g, "'").replace(";", "").replace(/,/g, "");
-      inputs.push({
-        inputName: tmp[1].replace(":", ""),
-        type,
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.regularInputLiteralTypeSelector, "");
-
-    // @Input() variableName: type; and @Input() variableName: number = 9;
-    inputsData = [];
-    inputsData = file?.match(REGEX_SELECTORS.regularInputWithTypeSelector) || [];
-    for (let input of inputsData) {
-      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      inputs.push({
-        inputName: tmp[1].replace(":", ""),
-        type: tmp[2].replace(";", ""),
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.regularInputWithTypeSelector, "");
-
-    inputsData = [];
-    // @Input('inputName') varName: type; and @Input("inputName") varName: type
-    inputsData = file?.match(REGEX_SELECTORS.customNameInputWithTypeSelector) || [];
-    for (let input of inputsData) {
-      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [])[0].replace(/'|"/g, "");
-      inputs.push({
-        inputName,
-        type: tmp[2].replace(";", ""),
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.customNameInputWithTypeSelector, "");
-
-    // @Input('inputNameC') varName = 'adv';
-    // @Input("inputNameD") varName = 2354;
-    inputsData = [];
-    inputsData = file?.match(REGEX_SELECTORS.setterInputCustomNameSelector) || [];
-    for (let input of inputsData) {
-      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [""])[0].replace(/'|"/g, "");
-      inputs.push({
-        inputName,
-        type: undefined,
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.setterInputCustomNameSelector, "");
-
-    //@Input() set foo(value) {}
-    inputsData = [];
-    inputsData = file?.match(REGEX_SELECTORS.setterInputSelector) || [];
-    for (let input of inputsData) {
-      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
-      inputs.push({
-        inputName,
-        type: undefined,
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.setterInputSelector, "");
-
-    //@Input() set foo(value: type) {}
-    inputsData = [];
-    inputsData = file?.match(REGEX_SELECTORS.setterInputWithTypeSelector) || [];
-    for (let input of inputsData) {
-      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
-      const type = tmp[3].replace(/(\s+)/g, "").split(")")[0];
-      inputs.push({
-        inputName,
-        type,
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.setterInputWithTypeSelector, "");
-
-    //@Input() set foo(value: 'type1' | 'type2') {}
-    inputsData = [];
-    inputsData = file?.match(REGEX_SELECTORS.setterInputLiteralTypeSelector) || [];
-    for (let input of inputsData) {
-      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
-      const type = tmp
-        .slice(3, tmp.length)
-        .join()
-        .replace(/'|"|\)/g, "")
-        .replace(/,/g, " ");
-      inputs.push({
-        inputName,
-        type,
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.setterInputLiteralTypeSelector, "");
-
-    // @Input() variableName; and @Input() variableName. Also for now we will parse
-    // in this part of the code @Input() variableName = value and @Input() variableName = value;
-    inputsData = [];
-    inputsData = file?.match(REGEX_SELECTORS.regularInputSelector) || [];
-    for (let input of inputsData) {
-      let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = tmp[1].replace(";", "");
-      if (inputs.filter((elem) => elem.inputName == inputName).length > 0) {
-        continue;
-      }
-      inputs.push({
-        inputName,
-        type: undefined,
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.regularInputSelector, "");
-    logger.log("Inputs detected:", inputs);
+    let inputs: Array<Input> = parseInputs(file);
 
     let outputs: Array<Output> = [];
     // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
@@ -240,4 +125,124 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     }
   }
   return result;
+};
+
+const parseInputs = (file: string): Array<Input> => {
+  // notice we ignore the default value of the input in the regex
+  // Input() foo: 'type1' | 'type2'
+  let inputsData: Array<string> = file?.match(REGEX_SELECTORS.regularInputLiteralTypeSelector) || [],
+    inputs: Array<Input> = [];
+  for (let input of inputsData) {
+    logger.log("inputs parsed:", inputsData);
+    let tmp: Array<string> = input.replace(/(\s)+/g, " ").split(" ");
+    let type = tmp.slice(2, tmp.length).join().replace(/\"/g, "'").replace(";", "").replace(/,/g, "");
+    inputs.push({
+      inputName: tmp[1].replace(":", ""),
+      type,
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.regularInputLiteralTypeSelector, "");
+
+  // @Input() variableName: type; and @Input() variableName: number = 9;
+  inputsData = [];
+  inputsData = file?.match(REGEX_SELECTORS.regularInputWithTypeSelector) || [];
+  for (let input of inputsData) {
+    let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+    inputs.push({
+      inputName: tmp[1].replace(":", ""),
+      type: tmp[2].replace(";", ""),
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.regularInputWithTypeSelector, "");
+
+  inputsData = [];
+  // @Input('inputName') varName: type; and @Input("inputName") varName: type
+  inputsData = file?.match(REGEX_SELECTORS.customNameInputWithTypeSelector) || [];
+  for (let input of inputsData) {
+    let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+    const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [])[0].replace(/'|"/g, "");
+    inputs.push({
+      inputName,
+      type: tmp[2].replace(";", ""),
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.customNameInputWithTypeSelector, "");
+
+  // @Input('inputNameC') varName = 'adv';
+  // @Input("inputNameD") varName = 2354;
+  inputsData = [];
+  inputsData = file?.match(REGEX_SELECTORS.setterInputCustomNameSelector) || [];
+  for (let input of inputsData) {
+    let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+    const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [""])[0].replace(/'|"/g, "");
+    inputs.push({
+      inputName,
+      type: undefined,
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.setterInputCustomNameSelector, "");
+
+  //@Input() set foo(value) {}
+  inputsData = [];
+  inputsData = file?.match(REGEX_SELECTORS.setterInputSelector) || [];
+  for (let input of inputsData) {
+    let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+    const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
+    inputs.push({
+      inputName,
+      type: undefined,
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.setterInputSelector, "");
+
+  //@Input() set foo(value: type) {}
+  inputsData = [];
+  inputsData = file?.match(REGEX_SELECTORS.setterInputWithTypeSelector) || [];
+  for (let input of inputsData) {
+    let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+    const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
+    const type = tmp[3].replace(/(\s+)/g, "").split(")")[0];
+    inputs.push({
+      inputName,
+      type,
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.setterInputWithTypeSelector, "");
+
+  //@Input() set foo(value: 'type1' | 'type2') {}
+  inputsData = [];
+  inputsData = file?.match(REGEX_SELECTORS.setterInputLiteralTypeSelector) || [];
+  for (let input of inputsData) {
+    let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+    const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
+    const type = tmp
+      .slice(3, tmp.length)
+      .join()
+      .replace(/'|"|\)/g, "")
+      .replace(/,/g, " ");
+    inputs.push({
+      inputName,
+      type,
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.setterInputLiteralTypeSelector, "");
+
+  // @Input() variableName; and @Input() variableName. Also for now we will parse
+  // in this part of the code @Input() variableName = value and @Input() variableName = value;
+  inputsData = [];
+  inputsData = file?.match(REGEX_SELECTORS.regularInputSelector) || [];
+  for (let input of inputsData) {
+    let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
+    const inputName = tmp[1].replace(";", "");
+    if (inputs.filter((elem) => elem.inputName == inputName).length > 0) {
+      continue;
+    }
+    inputs.push({
+      inputName,
+      type: undefined,
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.regularInputSelector, "");
+  logger.log("Inputs detected:", inputs);
+  return inputs;
 };
