@@ -55,20 +55,8 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       logger.log("Selector:", selector);
     }
 
-    let inputs: Array<Input> = parseInputs(file);
-
-    let outputs: Array<Output> = [];
-    // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
-    let outputsData: Array<string> = file?.match(REGEX_SELECTORS.regularOutputSelector) || [];
-    for (let output of outputsData) {
-      let tmp: Array<string> = output.replace(/(\s+)/g, " ").split(" ");
-      outputs.push({
-        outputName: tmp[1].replace(":", ""),
-        type: tmp[2].substr(tmp[2].indexOf("<"), tmp[2].indexOf(">")).replace(">", "").replace("<", ""),
-      });
-    }
-    file = file.replace(REGEX_SELECTORS.regularOutputSelector, "");
-    logger.log("Outputs detected:", outputs);
+    let inputs: Array<Input> = parseInputs(file),
+      outputs: Array<Output> = parseOutputs(file);
 
     let extendedClassPath;
     if (file?.match(REGEX_SELECTORS.extendedClassSelector)) {
@@ -127,6 +115,11 @@ export const parser = (filePaths: Array<string>): Array<File> => {
   return result;
 };
 
+/**
+ * @private
+ * @param {string} file a string where to look for input definitions
+ * @returns {Array<Input>} An array containing all the inputs defined in the given string
+ */
 const parseInputs = (file: string): Array<Input> => {
   // notice we ignore the default value of the input in the regex
   // Input() foo: 'type1' | 'type2'
@@ -245,4 +238,26 @@ const parseInputs = (file: string): Array<Input> => {
   file = file.replace(REGEX_SELECTORS.regularInputSelector, "");
   logger.log("Inputs detected:", inputs);
   return inputs;
+};
+
+/**
+ * @private
+ * @param {string} file a string where to look for output definitions
+ * @returns {Array<Input>} An array containing all the outputs defined in the given string
+ */
+const parseOutputs = (file: string): Array<Output> => {
+  let outputs: Array<Output> = [];
+  // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
+  let outputsData: Array<string> = file?.match(REGEX_SELECTORS.regularOutputSelector) || [];
+  for (let output of outputsData) {
+    let tmp: Array<string> = output.replace(/(\s+)/g, " ").split(" ");
+    outputs.push({
+      outputName: tmp[1].replace(":", ""),
+      type: tmp[2].substr(tmp[2].indexOf("<"), tmp[2].indexOf(">")).replace(">", "").replace("<", ""),
+    });
+  }
+  file = file.replace(REGEX_SELECTORS.regularOutputSelector, "");
+  logger.log("Outputs detected:", outputs);
+
+  return outputs;
 };
