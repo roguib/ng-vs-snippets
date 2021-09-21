@@ -65,10 +65,7 @@ export const run = async (args: string[]) => {
 
   process.env.ROOT_PROJECT_PATH = config.workingDir || path.posix.resolve();
 
-  let candidateFilePaths: Array<string> = walker.walker(
-    process.env.ROOT_PROJECT_PATH as string,
-    []
-  );
+  let candidateFilePaths: Array<string> = walker.walker(process.env.ROOT_PROJECT_PATH as string, []);
   let fileData: Array<File> = parser.parser(candidateFilePaths);
   generator.generator(fileData, config.outputDir as string);
 };

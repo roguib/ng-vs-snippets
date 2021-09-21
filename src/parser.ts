@@ -26,17 +26,12 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       containsComponentDef = true;
     }
 
-    if (
-      !containsComponentDef &&
-      file?.match(/@Input/g) == null &&
-      file?.match(/@Output/g) == null
-    ) {
+    if (!containsComponentDef && file?.match(/@Input/g) == null && file?.match(/@Output/g) == null) {
       logger.log("No component, Inputs or Outputs defined in this file");
       continue;
     }
 
-    let fileNameData: Array<string> =
-      file?.match(REGEX_SELECTORS.componentSelector) || [];
+    let fileNameData: Array<string> = file?.match(REGEX_SELECTORS.componentSelector) || [];
     if (fileNameData.length === 0) {
       logger.warn("Component tag not defined by any class.");
       continue;
@@ -50,12 +45,9 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     let selector = "";
     if (containsComponentDef) {
       // match returns a string not an array
-      let componentSelectorData: Array<string> =
-        file?.match(REGEX_SELECTORS.componentHTMLselector) || [];
+      let componentSelectorData: Array<string> = file?.match(REGEX_SELECTORS.componentHTMLselector) || [];
       if (componentSelectorData.length === 0) {
-        logger.warn(
-          "Component doesn't define any selector but contains @Component anotation."
-        );
+        logger.warn("Component doesn't define any selector but contains @Component anotation.");
         continue;
       }
       componentSelectorData[0].replace(/(\s+)/g, " ");
@@ -66,17 +58,11 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     // notice we ignore the default value of the input in the regex
     // Input() foo: 'type1' | 'type2'
     let inputs: Array<Input> = [];
-    let inputsData: Array<string> =
-      file?.match(REGEX_SELECTORS.regularInputLiteralTypeSelector) || [];
+    let inputsData: Array<string> = file?.match(REGEX_SELECTORS.regularInputLiteralTypeSelector) || [];
     for (let input of inputsData) {
       logger.log("inputs parsed:", inputsData);
       let tmp: Array<string> = input.replace(/(\s)+/g, " ").split(" ");
-      let type = tmp
-        .slice(2, tmp.length)
-        .join()
-        .replace(/\"/g, "'")
-        .replace(";", "")
-        .replace(/,/g, "");
+      let type = tmp.slice(2, tmp.length).join().replace(/\"/g, "'").replace(";", "").replace(/,/g, "");
       inputs.push({
         inputName: tmp[1].replace(":", ""),
         type,
@@ -86,8 +72,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     // @Input() variableName: type; and @Input() variableName: number = 9;
     inputsData = [];
-    inputsData =
-      file?.match(REGEX_SELECTORS.regularInputWithTypeSelector) || [];
+    inputsData = file?.match(REGEX_SELECTORS.regularInputWithTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       inputs.push({
@@ -99,12 +84,10 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     inputsData = [];
     // @Input('inputName') varName: type; and @Input("inputName") varName: type
-    inputsData =
-      file?.match(REGEX_SELECTORS.customNameInputWithTypeSelector) || [];
+    inputsData = file?.match(REGEX_SELECTORS.customNameInputWithTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) ||
-        [])[0].replace(/'|"/g, "");
+      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [])[0].replace(/'|"/g, "");
       inputs.push({
         inputName,
         type: tmp[2].replace(";", ""),
@@ -115,13 +98,10 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     // @Input('inputNameC') varName = 'adv';
     // @Input("inputNameD") varName = 2354;
     inputsData = [];
-    inputsData =
-      file?.match(REGEX_SELECTORS.setterInputCustomNameSelector) || [];
+    inputsData = file?.match(REGEX_SELECTORS.setterInputCustomNameSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
-      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [
-        "",
-      ])[0].replace(/'|"/g, "");
+      const inputName = (tmp[0].match(/('|")[a-zA-Z0-9-_]+('|")/g) || [""])[0].replace(/'|"/g, "");
       inputs.push({
         inputName,
         type: undefined,
@@ -158,8 +138,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     //@Input() set foo(value: 'type1' | 'type2') {}
     inputsData = [];
-    inputsData =
-      file?.match(REGEX_SELECTORS.setterInputLiteralTypeSelector) || [];
+    inputsData = file?.match(REGEX_SELECTORS.setterInputLiteralTypeSelector) || [];
     for (let input of inputsData) {
       let tmp: Array<string> = input.replace(/(\s+)/g, " ").split(" ");
       const inputName = tmp[2].replace(/(\s+)/g, "").split("(")[0];
@@ -195,16 +174,12 @@ export const parser = (filePaths: Array<string>): Array<File> => {
 
     let outputs: Array<Output> = [];
     // only @Output() buttonClick: EventEmitter<any> = new EventEmitter(); for now
-    let outputsData: Array<string> =
-      file?.match(REGEX_SELECTORS.regularOutputSelector) || [];
+    let outputsData: Array<string> = file?.match(REGEX_SELECTORS.regularOutputSelector) || [];
     for (let output of outputsData) {
       let tmp: Array<string> = output.replace(/(\s+)/g, " ").split(" ");
       outputs.push({
         outputName: tmp[1].replace(":", ""),
-        type: tmp[2]
-          .substr(tmp[2].indexOf("<"), tmp[2].indexOf(">"))
-          .replace(">", "")
-          .replace("<", ""),
+        type: tmp[2].substr(tmp[2].indexOf("<"), tmp[2].indexOf(">")).replace(">", "").replace("<", ""),
       });
     }
     file = file.replace(REGEX_SELECTORS.regularOutputSelector, "");
@@ -213,20 +188,13 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     let extendedClassPath;
     if (file?.match(REGEX_SELECTORS.extendedClassSelector)) {
       // we should see if the extended class is in tmp and if not extract the inputs defined inside
-      let matchExtendedClass: Array<string> =
-        file?.match(REGEX_SELECTORS.extendedClassSelector) || [];
+      let matchExtendedClass: Array<string> = file?.match(REGEX_SELECTORS.extendedClassSelector) || [];
       // resolve the path of the class
-      let extendedClass: string = matchExtendedClass[0]
-        .replace(/(\s+)/g, " ")
-        .split(" ")[4];
+      let extendedClass: string = matchExtendedClass[0].replace(/(\s+)/g, " ").split(" ")[4];
       logger.log("extendedClassName:", extendedClass);
-      let matchExtendedClassPath: Array<string> =
-        file?.match(REGEX_SELECTORS.extendedClassPathSelector) || [];
+      let matchExtendedClassPath: Array<string> = file?.match(REGEX_SELECTORS.extendedClassPathSelector) || [];
 
-      extendedClassPath = pathResolver.resolve(
-        filePath,
-        matchExtendedClassPath[0]
-      );
+      extendedClassPath = pathResolver.resolve(filePath, matchExtendedClassPath[0]);
 
       logger.log("path:", extendedClassPath);
     }
@@ -264,14 +232,8 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     if (result[i].extendedClassFilepath) {
       for (let j = 0; j < tmp.length; ++j) {
         if (result[i].extendedClassFilepath === tmp[j].fileLocation) {
-          result[i].inputs = [
-            ...result[i].inputs,
-            ...(tmp[j].inputs as []),
-          ] as Input[];
-          result[i].outputs = [
-            ...result[i].outputs,
-            ...(tmp[j].outputs as []),
-          ] as Output[];
+          result[i].inputs = [...result[i].inputs, ...(tmp[j].inputs as [])] as Input[];
+          result[i].outputs = [...result[i].outputs, ...(tmp[j].outputs as [])] as Output[];
           break;
         }
       }

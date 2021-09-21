@@ -5,10 +5,7 @@ const fs = require("fs");
 const path = require("path");
 
 // TODO: Parse files synchronously
-export const walker = (
-  root: string,
-  filesExploredPath: Array<string>
-): Array<string> => {
+export const walker = (root: string, filesExploredPath: Array<string>): Array<string> => {
   let pendingDir: Array<string> = [root];
 
   while (pendingDir.length > 0) {
@@ -25,11 +22,7 @@ export const walker = (
       if (file.isFile() && file.name.endsWith(".ts")) {
         logger.log("Candidate file to contain component definition:", file.name);
         filesExploredPath.push(path.join(currentDir, file.name));
-      } else if (
-        file.isDirectory() &&
-        file.name != "node_modules" &&
-        file.name != ".git"
-      ) {
+      } else if (file.isDirectory() && file.name != "node_modules" && file.name != ".git") {
         pendingDir.push(path.join(currentDir, file.name));
       }
     }

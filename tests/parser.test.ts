@@ -5,14 +5,8 @@ test("Parses the contents of the candidate files and returns an array of File ty
   const result = [
     {
       componentName: "MainComponent",
-      extendedClassFilepath: path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/base.component.ts"
-      ),
-      fileLocation: path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/main.component.ts"
-      ),
+      extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/base.component.ts"),
+      fileLocation: path.join(path.posix.resolve(), "/tests/fixtures/parser/main.component.ts"),
       inputs: [
         {
           inputName: "literalType1",
@@ -102,36 +96,20 @@ test("Parses the contents of the candidate files and returns an array of File ty
   ];
   expect(
     parser.parser([
-      path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/main.component.ts"
-      ),
-      path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/base.component.ts"
-      ),
-      path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/component.module.ts"
-      ),
+      path.join(path.posix.resolve(), "/tests/fixtures/parser/main.component.ts"),
+      path.join(path.posix.resolve(), "/tests/fixtures/parser/base.component.ts"),
+      path.join(path.posix.resolve(), "/tests/fixtures/parser/component.module.ts"),
     ])
   ).toStrictEqual(result);
 });
 
 test("Tests the parser when de file is imported using the @ special keyword path defined in tsconfig.json", async () => {
-  process.env.ROOT_PROJECT_PATH =
-    "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
   const result = [
     {
       componentName: "SpecialPathComponent",
-      extendedClassFilepath: path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/special-path-tsconfig/special-base.component.ts"
-      ),
-      fileLocation: path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"
-      ),
+      extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-base.component.ts"),
+      fileLocation: path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"),
       inputs: [
         {
           inputName: "inputInChildClass",
@@ -148,14 +126,8 @@ test("Tests the parser when de file is imported using the @ special keyword path
   ];
   expect(
     parser.parser([
-      path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/special-path-tsconfig/special-base.component.ts"
-      ),
-      path.join(
-        path.posix.resolve(),
-        "/tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"
-      ),
+      path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-base.component.ts"),
+      path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"),
     ])
   ).toStrictEqual(result);
 });
