@@ -1,37 +1,26 @@
 const fs = require("fs");
 const path = require("path");
 
+import { FileType } from "./shared/constants";
 import { File, Input, Output } from "./shared/IFile";
 import logger from "./shared/logger";
 import pathResolver from "./utils/path-resolver";
 import { REGEX_SELECTORS } from "./utils/regexSelectors";
 
-// TODO: class implementation with inputs/outputs defined
-
 // TODO: Test in other OS (github actions)
-// TODO: Read files asynchronously to improve performance?
-export const parser = (filePaths: Array<string>): Array<File> => {
-  let result: Array<File> = [];
-  // a temporal variable used for storing @Inputs/@Outputs declared on a parent class
-  let tmp: Array<Partial<File>> = [];
+export const parser = (data: Array<{ type: FileType; filePath: string; fileData: string }>): Array<File> => {
+  let result: Array<File> = [],
+    tmp: Array<Partial<File>> = []; // a temporal variable used for storing @Inputs/@Outputs declared on a parent class
 
-  for (const filePath of filePaths) {
-    let file: string = fs.readFileSync(filePath, {
-      encoding: "utf8",
-      flag: "r",
-    });
+  for (const item of data) {
+    let containsComponentDef = item.type === "COMPONENT" ? true : false;
 
-    let containsComponentDef = false;
-    if (file?.match(/@Component/g)?.length || 0 > 0) {
-      containsComponentDef = true;
-    }
-
-    if (!containsComponentDef && file?.match(/@Input/g) == null && file?.match(/@Output/g) == null) {
-      logger.log("No component, Inputs or Outputs defined in this file");
+    if (!containsComponentDef && item.fileData?.match(/@Input/g) == null && item.fileData?.match(/@Output/g) == null) {
+      logger.log("No component, Inputs or Outputs defined in this file:", item.filePath);
       continue;
     }
 
-    let fileNameData: Array<string> = file?.match(REGEX_SELECTORS.componentSelector) || [];
+    let fileNameData: Array<string> = item.fileData?.match(REGEX_SELECTORS.componentSelector) || [];
     if (fileNameData.length === 0) {
       logger.warn("Component tag not defined by any class.");
       continue;
@@ -45,9 +34,9 @@ export const parser = (filePaths: Array<string>): Array<File> => {
     let selector = "";
     if (containsComponentDef) {
       // match returns a string not an array
-      let componentSelectorData: Array<string> = file?.match(REGEX_SELECTORS.componentHTMLselector) || [];
+      let componentSelectorData: Array<string> = item.fileData?.match(REGEX_SELECTORS.componentHTMLselector) || [];
       if (componentSelectorData.length === 0) {
-        logger.warn("Component doesn't define any selector but contains @Component anotation.");
+        logger.warn("Component doesn't define any selector but contains @Component anotation:", item.filePath);
         continue;
       }
       componentSelectorData[0].replace(/(\s+)/g, " ");
@@ -55,26 +44,26 @@ export const parser = (filePaths: Array<string>): Array<File> => {
       logger.log("Selector:", selector);
     }
 
-    let inputs: Array<Input> = parseInputs(file),
-      outputs: Array<Output> = parseOutputs(file);
+    let inputs: Array<Input> = parseInputs(item.fileData),
+      outputs: Array<Output> = parseOutputs(item.fileData);
 
     let extendedClassPath;
-    if (file?.match(REGEX_SELECTORS.extendedClassSelector)) {
+    if (item.fileData?.match(REGEX_SELECTORS.extendedClassSelector)) {
       // we should see if the extended class is in tmp and if not extract the inputs defined inside
-      let matchExtendedClass: Array<string> = file?.match(REGEX_SELECTORS.extendedClassSelector) || [];
+      let matchExtendedClass: Array<string> = item.fileData?.match(REGEX_SELECTORS.extendedClassSelector) || [];
       // resolve the path of the class
       let extendedClass: string = matchExtendedClass[0].replace(/(\s+)/g, " ").split(" ")[4];
       logger.log("extendedClassName:", extendedClass);
-      let matchExtendedClassPath: Array<string> = file?.match(REGEX_SELECTORS.extendedClassPathSelector) || [];
+      let matchExtendedClassPath: Array<string> = item.fileData?.match(REGEX_SELECTORS.extendedClassPathSelector) || [];
 
-      extendedClassPath = pathResolver.resolve(filePath, matchExtendedClassPath[0]);
+      extendedClassPath = pathResolver.resolve(item.filePath, matchExtendedClassPath[0]);
 
       logger.log("path:", extendedClassPath);
     }
 
     if (containsComponentDef) {
       result.push({
-        fileLocation: filePath,
+        fileLocation: item.filePath, // TODO: Rename it to filePath
         prefix: selector,
         componentName: componentName,
         inputs: inputs,
@@ -90,7 +79,7 @@ export const parser = (filePaths: Array<string>): Array<File> => {
        * the amount of times we call path.join(path.posix.resolve(), path);
        */
       tmp.push({
-        fileLocation: path.resolve(filePath),
+        fileLocation: path.resolve(item.filePath),
         inputs: inputs,
         outputs: outputs,
         extendedClassFilepath: undefined,

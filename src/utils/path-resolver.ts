@@ -34,8 +34,9 @@ export const resolve = (filePath: string, importExpr: string): string | null => 
     const rootProjectDir = process.env.ROOT_PROJECT_PATH;
 
     if (tsconfigFile == null) {
+      const tsconfigFilePath = path.resolve(`${rootProjectDir}/tsconfig.json`);
       tsconfigFile = JSON.parse(
-        fs.readFileSync(path.resolve(`${rootProjectDir}/tsconfig.json`), {
+        fs.readFileSync(tsconfigFilePath, {
           encoding: "utf8",
           flag: "r",
         })
