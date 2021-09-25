@@ -13,7 +13,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
     {
       componentName: "MainComponent",
       extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/base.component.ts"),
-      fileLocation: path.join(path.posix.resolve(), "/tests/fixtures/parser/main.component.ts"),
+      filePath: path.join(path.posix.resolve(), "/tests/fixtures/parser/main.component.ts"),
       inputs: [
         {
           inputName: "literalType1",
@@ -171,7 +171,7 @@ test("Tests the parser when de file is imported using the @ special keyword path
     {
       componentName: "SpecialPathComponent",
       extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-base.component.ts"),
-      fileLocation: path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"),
+      filePath: path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"),
       inputs: [
         {
           inputName: "inputInChildClass",

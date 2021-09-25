@@ -64,7 +64,7 @@ export const parser = (data: Array<IFileData>): Array<File> => {
 
     if (containsComponentDef) {
       result.push({
-        fileLocation: item.filePath, // TODO: Rename it to filePath
+        filePath: item.filePath,
         prefix: selector,
         componentName: componentName,
         inputs: inputs,
@@ -80,7 +80,7 @@ export const parser = (data: Array<IFileData>): Array<File> => {
        * the amount of times we call path.join(path.posix.resolve(), path);
        */
       tmp.push({
-        fileLocation: path.resolve(item.filePath),
+        filePath: path.resolve(item.filePath),
         inputs: inputs,
         outputs: outputs,
         extendedClassFilepath: undefined,
@@ -94,7 +94,7 @@ export const parser = (data: Array<IFileData>): Array<File> => {
   for (let i = 0; i < result.length; ++i) {
     if (result[i].extendedClassFilepath) {
       for (let j = 0; j < tmp.length; ++j) {
-        if (result[i].extendedClassFilepath === tmp[j].fileLocation) {
+        if (result[i].extendedClassFilepath === tmp[j].filePath) {
           result[i].inputs = [...result[i].inputs, ...(tmp[j].inputs as [])] as Input[];
           result[i].outputs = [...result[i].outputs, ...(tmp[j].outputs as [])] as Output[];
           break;
