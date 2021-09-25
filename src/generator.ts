@@ -3,6 +3,12 @@ import logger from "./shared/logger";
 const fs = require("fs");
 const path = require("path");
 
+/**
+ *
+ * @param {Array<File>} files An array of tokens generated after parsing the content of every file
+ * @param {string} outputPath The location in which the function has to write the file with the deffinitions
+ * of the snippets
+ */
 export const generator = (files: Array<File>, outputPath: string): void => {
   // scope will be html only for now
   let json = Object();

@@ -9,6 +9,11 @@ import pathResolver from "./utils/path-resolver";
 import { REGEX_SELECTORS } from "./utils/regexSelectors";
 
 // TODO: Test in other OS (github actions)
+/**
+ *
+ * @param {IFIleData} data An array of files that can contain component or class definitions
+ * @returns {File} An array filed of tokens that contains information about each component parsed
+ */
 export const parser = (data: Array<IFileData>): Array<File> => {
   let result: Array<File> = [],
     tmp: Array<Partial<File>> = []; // a temporal variable used for storing @Inputs/@Outputs declared on a parent class
