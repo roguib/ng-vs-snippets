@@ -3,12 +3,13 @@ const path = require("path");
 
 import { FileType } from "./shared/constants";
 import { File, Input, Output } from "./shared/IFile";
+import { IFileData } from "./shared/IFileData";
 import logger from "./shared/logger";
 import pathResolver from "./utils/path-resolver";
 import { REGEX_SELECTORS } from "./utils/regexSelectors";
 
 // TODO: Test in other OS (github actions)
-export const parser = (data: Array<{ type: FileType; filePath: string; fileData: string }>): Array<File> => {
+export const parser = (data: Array<IFileData>): Array<File> => {
   let result: Array<File> = [],
     tmp: Array<Partial<File>> = []; // a temporal variable used for storing @Inputs/@Outputs declared on a parent class
 

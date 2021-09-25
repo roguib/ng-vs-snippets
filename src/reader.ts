@@ -1,13 +1,21 @@
 import { Dirent } from "fs";
 import { FileType } from "./shared/constants";
+import { IFileData } from "./shared/IFileData";
 import logger from "./shared/logger";
 
 const fs = require("fs");
 const path = require("path");
 
-export const reader = (root: string): Array<{ type: FileType; filePath: string; fileData: string }> => {
+/**
+ *
+ * @param {string} root The root of the directory in which the function has
+ * to start reading files
+ * @returns {Array<IFileData>} An array that contains all the files that are candidates of having
+ * components or class definitions
+ */
+export const reader = (root: string): Array<IFileData> => {
   let pendingDir: Array<string> = [root],
-    result: Array<{ type: FileType; filePath: string; fileData: string }> = [];
+    result: Array<IFileData> = [];
 
   while (pendingDir.length > 0) {
     let currentDir = pendingDir.shift();
