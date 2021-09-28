@@ -12,26 +12,25 @@ let debuggerEnabled = false;
 
 export const enableDebugger = () => {
   debuggerEnabled = true;
-}
+};
 
 export const disableDebugger = () => {
   debuggerEnabled = false;
-}
+};
 
 export const log = (message: string, args?: any[] | any) => {
-  if (!debuggerEnabled) return; 
+  if (!debuggerEnabled) return;
 
   console.log(logPrefix + message, args);
 };
 
 export const warn = (message: string, args?: any[] | any) => {
-  if (!debuggerEnabled) return; 
+  if (!debuggerEnabled) return;
 
   console.log(warnPrefix + message, args);
 };
 
 export const err = (message: string, args?: any[] | any) => {
-
   console.log(errorPrefix + message, args);
   process.exit();
 };

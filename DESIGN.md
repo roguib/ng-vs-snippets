@@ -11,10 +11,10 @@ Once every file has been parsed, generate a JSON with the information gathered a
 ## High-level implementation
 
 ```ts
-public walker(root: string, filesExploredPath: Array<string>): Array<string>
+public reader(root: string): Array<string>
 ```
 
-The function `walker` will start at the root directory and save those files candidates of having components defined inside of them. Only will consider files with `.ts` extension. Should traverse all the file tree from the root up to the bottom and return the full path to every candidate file.
+The function `reader` will start at the root directory and save those files candidates of having components defined inside of them. Only will consider files with `.ts` extension. Should traverse all the file tree from the root up to the bottom and return the full path to every candidate file, the content of the file and the type of definition that contains that file (component, pipe or directive).
 
 ```ts
 public parser(filePaths: Array<string>): Array<File>

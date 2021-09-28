@@ -1,5 +1,5 @@
 export interface File {
-  fileLocation: string;
+  filePath: string;
   prefix: string;
   componentName: string;
   inputs: Array<Input>;

@@ -1,11 +1,13 @@
 const path = require("path");
 const argv = process.argv;
-import * as walker from "./walker";
+import * as reader from "./reader";
 import * as parser from "./parser";
 import * as generator from "./generator";
 import { File } from "./shared/IFile";
 import logger from "./shared/logger";
 import { ICLIConfig } from "./shared/ICLIConfig";
+import { FileType } from "./shared/constants";
+import { IFileData } from "./shared/IFileData";
 
 let config: ICLIConfig = {
   workingDir: null,
@@ -65,10 +67,7 @@ export const run = async (args: string[]) => {
 
   process.env.ROOT_PROJECT_PATH = config.workingDir || path.posix.resolve();
 
-  let candidateFilePaths: Array<string> = walker.walker(
-    process.env.ROOT_PROJECT_PATH as string,
-    []
-  );
+  let candidateFilePaths: Array<IFileData> = reader.reader(process.env.ROOT_PROJECT_PATH as string);
   let fileData: Array<File> = parser.parser(candidateFilePaths);
   generator.generator(fileData, config.outputDir as string);
 };
