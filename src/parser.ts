@@ -19,77 +19,20 @@ export const parser = (data: Array<IFileData>): Array<File> => {
     tmp: Array<Partial<File>> = []; // a temporal variable used for storing @Inputs/@Outputs declared on a parent class
 
   for (const item of data) {
-    let containsComponentDef = item.type === "COMPONENT" ? true : false;
-
-    if (!containsComponentDef && item.fileData?.match(/@Input/g) == null && item.fileData?.match(/@Output/g) == null) {
-      logger.log("No component, Inputs or Outputs defined in this file:", item.filePath);
-      continue;
-    }
-
-    let fileNameData: Array<string> = item.fileData?.match(REGEX_SELECTORS.componentSelector) || [];
-    if (fileNameData.length === 0) {
-      logger.warn("Component tag not defined by any class.");
-      continue;
-    }
-
-    // we consider only one component per file
-    fileNameData[0].replace(/(\s+)/, " ");
-    const componentName: string = fileNameData[0].split(" ")[2];
-    logger.log("Name of the component:", componentName);
-
-    let selector = "";
-    if (containsComponentDef) {
-      // match returns a string not an array
-      let componentSelectorData: Array<string> = item.fileData?.match(REGEX_SELECTORS.componentHTMLselector) || [];
-      if (componentSelectorData.length === 0) {
-        logger.warn("Component doesn't define any selector but contains @Component anotation:", item.filePath);
-        continue;
-      }
-      componentSelectorData[0].replace(/(\s+)/g, " ");
-      selector = componentSelectorData[0].split(" ")[1].replace(/('|")/g, "");
-      logger.log("Selector:", selector);
-    }
-
-    let inputs: Array<Input> = parseInputs(item.fileData),
-      outputs: Array<Output> = parseOutputs(item.fileData);
-
-    let extendedClassPath;
-    if (item.fileData?.match(REGEX_SELECTORS.extendedClassSelector)) {
-      // we should see if the extended class is in tmp and if not extract the inputs defined inside
-      let matchExtendedClass: Array<string> = item.fileData?.match(REGEX_SELECTORS.extendedClassSelector) || [];
-      // resolve the path of the class
-      let extendedClass: string = matchExtendedClass[0].replace(/(\s+)/g, " ").split(" ")[4];
-      logger.log("extendedClassName:", extendedClass);
-      let matchExtendedClassPath: Array<string> = item.fileData?.match(REGEX_SELECTORS.extendedClassPathSelector) || [];
-
-      extendedClassPath = pathResolver.resolve(item.filePath, matchExtendedClassPath[0]);
-
-      logger.log("path:", extendedClassPath);
-    }
-
-    if (containsComponentDef) {
-      result.push({
-        filePath: item.filePath,
-        prefix: selector,
-        componentName: componentName,
-        inputs: inputs,
-        outputs: outputs,
-        extendedClassFilepath: extendedClassPath || undefined,
-      });
-    } else {
-      /**
-       * TODO: Instead of working with relative paths and converting them
-       * to absolute when needed, we can start the exec by transforming every
-       * relative path to absolute, and then clean up the resolve calls in the program
-       * that transforms the code into an spaguetti one. Also it could help by reducing
-       * the amount of times we call path.join(path.posix.resolve(), path);
-       */
-      tmp.push({
-        filePath: path.resolve(item.filePath),
-        inputs: inputs,
-        outputs: outputs,
-        extendedClassFilepath: undefined,
-      });
+    let parsedData;
+    switch (item.type) {
+      case "CLASS":
+        parsedData = parseClassDefinition(item);
+        if (parsedData) {
+          tmp.push(parsedData);
+        }
+        break;
+      default:
+        parsedData = parseComponentDefinition(item);
+        if (parsedData) {
+          result.push(parsedData);
+        }
+        break;
     }
   }
   // we're asuming there  won't be a lot of classes extending others
@@ -108,6 +51,65 @@ export const parser = (data: Array<IFileData>): Array<File> => {
     }
   }
   return result;
+};
+
+/**
+ * @private
+ * @param {IFIleData} file A file that is CLASS type
+ * @returns {string | undefined} A token with the data extracted from the class definition file
+ */
+const parseClassDefinition = (file: IFileData): Partial<File> | undefined => {
+  if (file.fileData?.match(/@Input/g) == null && file.fileData?.match(/@Output/g) == null) {
+    logger.log("No Inputs or Outputs defined in this file class:", file.filePath);
+    return undefined;
+  }
+
+  const inputs: Array<Input> = parseInputs(file.fileData),
+    outputs: Array<Output> = parseOutputs(file.fileData),
+    extendedClassFilepath = parseExtendedClassPath(file);
+  /**
+   * TODO: Instead of working with relative paths and converting them
+   * to absolute when needed, we can start the exec by transforming every
+   * relative path to absolute, and then clean up the resolve calls in the program
+   * that transforms the code into an spaguetti one. Also it could help by reducing
+   * the amount of times we call path.join(path.posix.resolve(), path);
+   */
+  return {
+    filePath: file.filePath,
+    inputs,
+    outputs,
+    extendedClassFilepath,
+  };
+};
+
+/**
+ * @private
+ * @param {IFIleData} file A file that is COMPONENT type
+ * @returns {string | undefined} A token with the data extracted from the class definition file
+ */
+const parseComponentDefinition = (file: IFileData): File | undefined => {
+  if (file.fileData?.match(/@Input/g) == null && file.fileData?.match(/@Output/g) == null) {
+    logger.log("No component, Inputs or Outputs defined in this file:", file.filePath);
+    return undefined;
+  }
+
+  const componentName = parseComponentName(file.fileData),
+    prefix = parseComponentSelector(file);
+  if (!componentName || !prefix) {
+    return undefined;
+  }
+  const inputs: Array<Input> = parseInputs(file.fileData),
+    outputs: Array<Output> = parseOutputs(file.fileData),
+    extendedClassFilepath = parseExtendedClassPath(file);
+
+  return {
+    filePath: file.filePath,
+    prefix,
+    componentName,
+    inputs,
+    outputs,
+    extendedClassFilepath,
+  };
 };
 
 /**
@@ -255,4 +257,65 @@ const parseOutputs = (file: string): Array<Output> => {
   logger.log("Outputs detected:", outputs);
 
   return outputs;
+};
+
+/**
+ * @private
+ * @param {IFIleData} file The class definition that is candidate to extend another class
+ * @returns {string | undefined} The absolute resolved extended class path or undefined if doesn´t extend any class
+ */
+const parseExtendedClassPath = (file: IFileData): string | undefined => {
+  let extendedClassPath: string | undefined;
+  if (file.fileData?.match(REGEX_SELECTORS.extendedClassSelector)) {
+    // we should see if the extended class is in tmp and if not extract the inputs defined inside
+    let matchExtendedClass: Array<string> = file.fileData?.match(REGEX_SELECTORS.extendedClassSelector) || [];
+    // resolve the path of the class
+    let extendedClass: string = matchExtendedClass[0].replace(/(\s+)/g, " ").split(" ")[4];
+    logger.log("extendedClassName:", extendedClass);
+    let matchExtendedClassPath: Array<string> = file.fileData?.match(REGEX_SELECTORS.extendedClassPathSelector) || [];
+
+    extendedClassPath = pathResolver.resolve(file.filePath, matchExtendedClassPath[0]) as string;
+
+    logger.log("path:", extendedClassPath);
+  }
+
+  return extendedClassPath;
+};
+
+/**
+ * @private
+ * @param {string} file
+ * @returns {string | undefined} The name of the component
+ */
+const parseComponentName = (file: string): string | undefined => {
+  let fileNameData: Array<string> = file?.match(REGEX_SELECTORS.componentSelector) || [];
+  if (fileNameData.length === 0) {
+    logger.warn("Component tag not defined by any class.");
+    return undefined;
+  }
+
+  // we consider only one component per file
+  fileNameData[0].replace(/(\s+)/, " ");
+  const componentName: string = fileNameData[0].split(" ")[2];
+  logger.log("Name of the component:", componentName);
+  return componentName;
+};
+
+/**
+ * @private
+ * @param {IFIleData} file
+ * @returns {string | undefined} The component selector
+ */
+const parseComponentSelector = (file: IFileData): string | undefined => {
+  let selector;
+  // match returns a string not an array
+  let componentSelectorData: Array<string> = file.fileData?.match(REGEX_SELECTORS.componentHTMLselector) || [];
+  if (componentSelectorData.length === 0) {
+    logger.warn("Component doesn't define any selector but contains @Component anotation:", file.filePath);
+    return undefined;
+  }
+  componentSelectorData[0].replace(/(\s+)/g, " ");
+  selector = componentSelectorData[0].split(" ")[1].replace(/('|")/g, "");
+  logger.log("Selector:", selector);
+  return selector;
 };
