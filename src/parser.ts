@@ -88,10 +88,9 @@ const parseClassDefinition = (file: IFileData): Partial<File> | undefined => {
  * @returns {string | undefined} A token with the data extracted from the class definition file
  */
 const parseComponentDefinition = (file: IFileData): File | undefined => {
-  if (file.fileData?.match(/@Input/g) == null && file.fileData?.match(/@Output/g) == null) {
+  const containsInputsOrOutputs = file.fileData?.match(/@Input/g) != null || file.fileData?.match(/@Output/g) != null;
+  if (!containsInputsOrOutputs) {
     logger.log("No component, Inputs or Outputs defined in this file:", file.filePath);
-    // TODO: Should be fixed, see: https://github.com/roguib/ng-vs-snippets/issues/23
-    return undefined;
   }
 
   const componentName = parseComponentName(file.fileData),
@@ -99,8 +98,8 @@ const parseComponentDefinition = (file: IFileData): File | undefined => {
   if (!componentName || !prefix) {
     return undefined;
   }
-  const inputs: Array<Input> = parseInputs(file.fileData),
-    outputs: Array<Output> = parseOutputs(file.fileData),
+  const inputs: Array<Input> = containsInputsOrOutputs ? parseInputs(file.fileData) : [],
+    outputs: Array<Output> = containsInputsOrOutputs ? parseOutputs(file.fileData) : [],
     extendedClassFilepath = parseExtendedClassPath(file);
 
   return {

@@ -258,3 +258,46 @@ test("Tests the parser with a component that contains an incorrect import path",
     ])
   ).toStrictEqual(result);
 });
+
+test("Tests the parser with a component that doesn't contain inputs or outputs but extends a class with input deffinition", async () => {
+  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  const result: any = [
+    {
+      componentName: "noInputsOrOutputsComponent",
+      extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/base.component.ts"),
+      filePath: path.join(path.posix.resolve(), "/tests/fixtures/parser/noInputsOrOutputs.component.ts"),
+      inputs: [
+        {
+          inputName: "baseInput",
+          type: "'type1'|'type2'|'type3'",
+        },
+      ],
+      outputs: [],
+      prefix: "app-main",
+    },
+  ];
+  expect(
+    parser.parser([
+      {
+        fileData: `import { Component, Input } from "@angular/core";
+        import { BaseComponent } from "./base.component";
+
+        @Component({
+          selector: "app-main",
+          templateUrl: "./app.main.component.html",
+        })
+        export class noInputsOrOutputsComponent extends BaseComponent {}`,
+        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\noInputsOrOutputs.component.ts",
+        type: "COMPONENT",
+      },
+      {
+        fileData: `import { Input } from \"@angular/core\",
+        export class BaseComponent {
+          @Input() baseInput: 'type1' | 'type2' | 'type3';
+        }`,
+        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\base.component.ts",
+        type: "CLASS",
+      },
+    ])
+  ).toStrictEqual(result);
+});
