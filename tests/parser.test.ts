@@ -214,3 +214,47 @@ test("Tests the parser when de file is imported using the @ special keyword path
     ])
   ).toStrictEqual(result);
 });
+
+test("Tests the parser with a component that contains a non existent import path", async () => {
+  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  const result: any = [];
+  expect(
+    parser.parser([
+      {
+        fileData: `import { BaseComponent } from "../some/random/import/here/fileWithRandomNameLoremIpsum.component";
+
+        @Component({
+          selector: "app-main",
+          templateUrl: "./app.main.component.html",
+        })
+        export class ComponentWithWrongImportPath extends BaseComponent {
+          @Input foo: string;
+        }`,
+        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\wrong-import-path.ts",
+        type: "CLASS",
+      },
+    ])
+  ).toStrictEqual(result);
+});
+
+test("Tests the parser with a component that contains an incorrect import path", async () => {
+  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  const result: any = [];
+  expect(
+    parser.parser([
+      {
+        fileData: `import { BaseComponent } from;
+
+        @Component({
+          selector: "app-main",
+          templateUrl: "./app.main.component.html",
+        })
+        export class ComponentWithWrongImportPath extends BaseComponent {
+          @Input foo: string;
+        }`,
+        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\wrong-import-path.ts",
+        type: "CLASS",
+      },
+    ])
+  ).toStrictEqual(result);
+});

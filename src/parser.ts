@@ -90,6 +90,7 @@ const parseClassDefinition = (file: IFileData): Partial<File> | undefined => {
 const parseComponentDefinition = (file: IFileData): File | undefined => {
   if (file.fileData?.match(/@Input/g) == null && file.fileData?.match(/@Output/g) == null) {
     logger.log("No component, Inputs or Outputs defined in this file:", file.filePath);
+    // TODO: Should be fixed, see: https://github.com/roguib/ng-vs-snippets/issues/23
     return undefined;
   }
 
@@ -273,6 +274,10 @@ const parseExtendedClassPath = (file: IFileData): string | undefined => {
     let extendedClass: string = matchExtendedClass[0].replace(/(\s+)/g, " ").split(" ")[4];
     logger.log("extendedClassName:", extendedClass);
     let matchExtendedClassPath: Array<string> = file.fileData?.match(REGEX_SELECTORS.extendedClassPathSelector) || [];
+    if (matchExtendedClassPath.length === 0) {
+      logger.log("Unable to parse import path in file:", file.filePath);
+      return undefined;
+    }
 
     extendedClassPath = pathResolver.resolve(file.filePath, matchExtendedClassPath[0]) as string;
 
