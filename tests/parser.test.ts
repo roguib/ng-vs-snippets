@@ -165,7 +165,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
   ).toStrictEqual(result);
 });
 
-test("Tests the parser when de file is imported using the @ special keyword path defined in tsconfig.json", async () => {
+test("Tests the parser when the file is imported using the @ special keyword path defined in tsconfig.json", async () => {
   process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "/tests/fixtures/parser");
   const result = [
     {
@@ -208,7 +208,7 @@ test("Tests the parser when de file is imported using the @ special keyword path
         export class SpecialPathComponent extends SpecialBaseComponent {
           @Input() inputInChildClass: \"type1\" | \"type2\" | \"type3\";
         }`,
-        filePath: path.join(path.posix.resolve(), "tests\\fixtures\\parser\\special-path-tsconfig\\special-path.component.ts"),
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"),
         type: "COMPONENT",
       },
     ])
