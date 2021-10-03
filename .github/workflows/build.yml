@@ -1,0 +1,32 @@
+
+on:
+  push:
+    branches:
+      - master
+      
+jobs:
+  test-and-build:
+    strategy:
+        matrix:
+          os: [ubuntu-latest, macos-latest, windows-latest]
+          node: [14]
+      runs-on: ${{ matrix.os }}
+    name: Test and build the library
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        id: dependencies
+        run: |
+          sudo apt-get update
+          npm i
+      
+      - name: Build the library
+        id: build
+        run: npm run build:cjs
+      
+      - name: Run tests
+        id: tests
+        run: npm run test
