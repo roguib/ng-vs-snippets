@@ -1,9 +1,9 @@
 ## 0.3.0
 
-- bugfix(generator) Avoid using square braquets when the input is a string type #7.
+- bugfix(generator) Avoid using square brackets when the input is a string type #7.
 - Automated lib publishing to NPM #12.
 - Fix NPM vulnerabilities #11.
-- Changelog updated with latests changes #6.
+- Changelog updated with latest changes #6.
 
 ## 0.2.0
 
