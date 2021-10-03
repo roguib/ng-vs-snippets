@@ -8,7 +8,6 @@ import logger from "./shared/logger";
 import pathResolver from "./utils/path-resolver";
 import { REGEX_SELECTORS } from "./utils/regexSelectors";
 
-// TODO: Test in other OS (github actions)
 /**
  *
  * @param {IFIleData} data An array of files that can contain component or class definitions
