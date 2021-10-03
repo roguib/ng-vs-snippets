@@ -20,9 +20,7 @@ jobs:
 
       - name: Install dependencies
         id: dependencies
-        run: |
-          sudo apt-get update
-          npm i
+        run: npm i
 
       - name: Build the library
         id: build
