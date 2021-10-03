@@ -5,7 +5,7 @@ test("Inspects /tests/fixtures/ts-files with reader function", () => {
   expect(reader.reader(path.join(path.posix.resolve(), "tests/fixtures/ts-files"))).toStrictEqual([
     {
       type: "CLASS",
-      filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\ts-files\\foo.ts",
+      filePath: path.join(path.posix.resolve(), "tests/fixtures/ts-files/foo.ts"),
       fileData:
         'import { Input } from "@angular/core";\r\n' +
         "\r\n" +
@@ -15,7 +15,7 @@ test("Inspects /tests/fixtures/ts-files with reader function", () => {
     },
     {
       type: "COMPONENT",
-      filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\ts-files\\var.ts",
+      filePath: path.join(path.posix.resolve(), "tests/fixtures/ts-files/var.ts"),
       fileData:
         'import { Input } from "@angular/core";\r\n' +
         "@Component({\r\n" +

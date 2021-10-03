@@ -8,7 +8,7 @@ const path = require("path");
 // 4. For class inheritance
 
 test("Parses the contents of the candidate files and returns an array of File type", async () => {
-  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "/tests/fixtures/parser");
   const result = [
     {
       componentName: "MainComponent",
@@ -108,7 +108,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
         export class BaseComponent {
           @Input() baseInput: 'type1' | 'type2' | 'type3';
         }`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\base.component.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/base.component.ts"),
         type: "CLASS",
       },
       {
@@ -121,7 +121,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
           exports: [Component],
         })
         export class ComponentModule {}`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\component.module.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/component.module.ts"),
         type: "CLASS",
       },
       {
@@ -158,7 +158,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
             action = \"action\";
           }
         }`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\main.component.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/main.component.ts"),
         type: "COMPONENT",
       },
     ])
@@ -166,7 +166,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
 });
 
 test("Tests the parser when de file is imported using the @ special keyword path defined in tsconfig.json", async () => {
-  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "/tests/fixtures/parser");
   const result = [
     {
       componentName: "SpecialPathComponent",
@@ -194,7 +194,7 @@ test("Tests the parser when de file is imported using the @ special keyword path
         export class SpecialBaseComponent {
           @Input() baseInputInSpecialBaseClass: \"type1\" | \"type2\" | \"type3\";
         }`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\special-path-tsconfig\\special-base.component.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/special-path-tsconfig/special-base.component.ts"),
         type: "CLASS",
       },
       {
@@ -208,7 +208,7 @@ test("Tests the parser when de file is imported using the @ special keyword path
         export class SpecialPathComponent extends SpecialBaseComponent {
           @Input() inputInChildClass: \"type1\" | \"type2\" | \"type3\";
         }`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\special-path-tsconfig\\special-path.component.ts",
+        filePath: path.join(path.posix.resolve(), "tests\\fixtures\\parser\\special-path-tsconfig\\special-path.component.ts"),
         type: "COMPONENT",
       },
     ])
@@ -216,7 +216,7 @@ test("Tests the parser when de file is imported using the @ special keyword path
 });
 
 test("Tests the parser with a component that contains a non existent import path", async () => {
-  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "tests/fixtures/parser");
   const result: any = [];
   expect(
     parser.parser([
@@ -230,7 +230,7 @@ test("Tests the parser with a component that contains a non existent import path
         export class ComponentWithWrongImportPath extends BaseComponent {
           @Input foo: string;
         }`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\wrong-import-path.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/wrong-import-path.ts"),
         type: "CLASS",
       },
     ])
@@ -238,7 +238,7 @@ test("Tests the parser with a component that contains a non existent import path
 });
 
 test("Tests the parser with a component that contains an incorrect import path", async () => {
-  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "tests/fixtures/parser");
   const result: any = [];
   expect(
     parser.parser([
@@ -252,7 +252,7 @@ test("Tests the parser with a component that contains an incorrect import path",
         export class ComponentWithWrongImportPath extends BaseComponent {
           @Input foo: string;
         }`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\wrong-import-path.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/wrong-import-path.ts"),
         type: "CLASS",
       },
     ])
@@ -260,7 +260,7 @@ test("Tests the parser with a component that contains an incorrect import path",
 });
 
 test("Tests the parser with a component that doesn't contain inputs or outputs but extends a class with input deffinition", async () => {
-  process.env.ROOT_PROJECT_PATH = "C:/Users/roger/oos/angular-vs-snippets/tests/fixtures/parser";
+  process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "tests/fixtures/parser");
   const result: any = [
     {
       componentName: "noInputsOrOutputsComponent",
@@ -287,7 +287,7 @@ test("Tests the parser with a component that doesn't contain inputs or outputs b
           templateUrl: "./app.main.component.html",
         })
         export class noInputsOrOutputsComponent extends BaseComponent {}`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\noInputsOrOutputs.component.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/noInputsOrOutputs.component.ts"),
         type: "COMPONENT",
       },
       {
@@ -295,7 +295,7 @@ test("Tests the parser with a component that doesn't contain inputs or outputs b
         export class BaseComponent {
           @Input() baseInput: 'type1' | 'type2' | 'type3';
         }`,
-        filePath: "C:\\Users\\roger\\oos\\angular-vs-snippets\\tests\\fixtures\\parser\\base.component.ts",
+        filePath: path.join(path.posix.resolve(), "tests/fixtures/parser/base.component.ts"),
         type: "CLASS",
       },
     ])

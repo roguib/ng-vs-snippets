@@ -18,7 +18,7 @@ test("JSON file generation", async () => {
           { outputName: "buttonClick", type: "any" },
           { outputName: "fooVar", type: "number" },
         ],
-        fileLocation: path.join(path.posix.resolve(), "/tests/fixtures/parser/main.component.ts"),
+        filePath: path.join(path.posix.resolve(), "/tests/fixtures/parser/main.component.ts"),
         extendedClassFilepath: undefined,
       },
     ],
