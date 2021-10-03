@@ -1,6 +1,6 @@
 # ng-vs-snippets
 
-![ts](https://badgen.net/badge/Built%20With/TypeScript/blue) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![made-for-VSCode](https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg)](https://code.visualstudio.com/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
+[![.github/workflows/build.yml](https://github.com/roguib/ng-vs-snippets/actions/workflows/build.yml/badge.svg)](https://github.com/roguib/ng-vs-snippets/actions/workflows/build.yml) ![ts](https://badgen.net/badge/Built%20With/TypeScript/blue) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT) [![made-for-VSCode](https://img.shields.io/badge/Made%20for-VSCode-1f425f.svg)](https://code.visualstudio.com/) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](http://makeapullrequest.com)
 
 Automatic VS Code snippet file generation for Angular codebases. Seamlessly maintain up-to-date VS Code snippets of all of your code.
 
