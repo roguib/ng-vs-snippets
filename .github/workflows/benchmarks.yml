@@ -2,8 +2,10 @@ name: Benchmark.js Example
 on:
   push:
     branches:
-      - master
-      - benchmark
+      - main
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
