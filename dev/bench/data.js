@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1633765231345,
+  "lastUpdate": 1633765788121,
   "repoUrl": "https://github.com/roguib/ng-vs-snippets",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -31,6 +31,37 @@ window.BENCHMARK_DATA = {
             "range": "±0.61%",
             "unit": "ops/sec",
             "extra": "85 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "roger.guib@gmail.com",
+            "name": "roguib",
+            "username": "roguib"
+          },
+          "committer": {
+            "email": "roger.guib@gmail.com",
+            "name": "roguib",
+            "username": "roguib"
+          },
+          "distinct": true,
+          "id": "56fe423101dc7764f04082525880a3614489cd44",
+          "message": "update readme",
+          "timestamp": "2021-10-09T09:49:11+02:00",
+          "tree_id": "c8ed08ba4ed690ee1a08c66d656027ffbde948fb",
+          "url": "https://github.com/roguib/ng-vs-snippets/commit/56fe423101dc7764f04082525880a3614489cd44"
+        },
+        "date": 1633765787670,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "testing workflow",
+            "value": 1322875,
+            "range": "±0.10%",
+            "unit": "ops/sec",
+            "extra": "99 samples"
           }
         ]
       }
