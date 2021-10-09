@@ -24,11 +24,13 @@
     "check": "tsc",
     "run": "node ./build/@roguib/ng-vs-snippets.js",
     "test": "npm run build:cjs && jest ./tests/*",
+    "benchmarks": "tsc tests/benchmarks/benchmarks.ts && node tests/benchmarks/benchmarks.js",
     "auto-publish": "tsc scripts/auto-publish.ts && node scripts/auto-publish.js",
     "prettier": "prettier"
   },
   "dependencies": {
     "@types/jest": "^26.0.24",
+    "benchmark": "^2.1.4",
     "prettier": "^2.3.2",
     "rollup": "^2.56.2",
     "rollup-plugin-add-shebang": "^0.3.1",
