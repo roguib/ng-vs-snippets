@@ -24,7 +24,7 @@
     "check": "tsc",
     "run": "node ./build/@roguib/ng-vs-snippets.js",
     "test": "npm run build:cjs && jest ./tests/*",
-    "benchmarks": "tsc tests/benchmarks/benchmarks.ts && node tests/benchmarks/benchmarks.js",
+    "benchmarks": "npm run build:cjs && tsc tests/benchmarks/benchmarks.ts && node tests/benchmarks/benchmarks.js",
     "auto-publish": "tsc scripts/auto-publish.ts && node scripts/auto-publish.js",
     "prettier": "prettier"
   },
