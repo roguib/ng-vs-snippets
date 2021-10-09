@@ -1,0 +1,10 @@
+src
+tests
+node_modules
+assets
+coverage
+out
+.vscode
+.github
+*.md
+tsconfig.json

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Node 14",
+
+  "compilerOptions": {
+    "lib": ["es2020"],
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "target": "es2020",
+    "outDir": "./build",
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "declaration": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build", "tests/fixtures", "coverage", "out"]
+}
