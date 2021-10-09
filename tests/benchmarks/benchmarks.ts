@@ -2,7 +2,7 @@ const Benchmark = require("benchmark");
 const suite = new Benchmark.Suite();
 
 suite
-  .add("foo", {
+  .add("Jest test suite", {
     defer: true,
     fn: (deferred) => {
       var spawn = require("child_process").spawn,
