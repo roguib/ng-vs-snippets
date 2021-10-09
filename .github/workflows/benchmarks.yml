@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
       - name: Run benchmark
-        run: npm install && npm run benchmarks | tee output.txt
+        run: npm install && npm run benchmarks | tee tests/benchmarks/output.txt
 
       - name: Store benchmark result
         uses: benchmark-action/github-action-benchmark@v1
