@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1633792104952,
+  "lastUpdate": 1633792266406,
   "repoUrl": "https://github.com/roguib/ng-vs-snippets",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -91,6 +91,37 @@ window.BENCHMARK_DATA = {
             "name": "foo",
             "value": 0.4,
             "range": "±39.76%",
+            "unit": "ops/sec",
+            "extra": "7 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "roger.guib@gmail.com",
+            "name": "roguib",
+            "username": "roguib"
+          },
+          "committer": {
+            "email": "roger.guib@gmail.com",
+            "name": "roguib",
+            "username": "roguib"
+          },
+          "distinct": true,
+          "id": "2a9c37869eb3bcdea0d3cfadbc2fdbb9b133f9f6",
+          "message": "rename benchmark.js test",
+          "timestamp": "2021-10-09T17:09:43+02:00",
+          "tree_id": "5303d1b161538cbd0352632a9ff799faf2ed719d",
+          "url": "https://github.com/roguib/ng-vs-snippets/commit/2a9c37869eb3bcdea0d3cfadbc2fdbb9b133f9f6"
+        },
+        "date": 1633792265638,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "Jest test suite",
+            "value": 0.43,
+            "range": "±37.74%",
             "unit": "ops/sec",
             "extra": "7 samples"
           }
