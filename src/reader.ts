@@ -37,11 +37,16 @@ export const reader = (root: string): Array<IFileData> => {
         });
 
         let type: FileType = "CLASS";
-        if (fileData?.match(/@Component/g)?.length || 0 > 0) {
+        const componentMatch: RegExpMatchArray | null = fileData?.match(/@Component/g);
+        if (componentMatch && componentMatch.length > 0) {
           type = "COMPONENT";
+        } else {
+          const pipeMatch: RegExpMatchArray | null = fileData?.match(/@Pipe/g);
+          if (pipeMatch && pipeMatch.length > 0) {
+            type = "PIPE";
+          }
         }
-
-        // In the future we will add FileType PIPE & FileType DIRECTIVE
+        // In the future we will add FileType DIRECTIVE
 
         result.push({
           type,

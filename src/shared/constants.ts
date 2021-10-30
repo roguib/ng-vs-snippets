@@ -1,1 +1,1 @@
-export type FileType = "CLASS" | "COMPONENT";
+export type FileType = "CLASS" | "COMPONENT" | "PIPE";
