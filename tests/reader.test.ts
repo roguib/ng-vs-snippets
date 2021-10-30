@@ -13,6 +13,14 @@ test("Inspects /tests/fixtures/ts-files with reader function", () => {
       }),
     },
     {
+      type: "PIPE",
+      filePath: path.join(path.posix.resolve(), "tests/fixtures/ts-files/pipe.ts"),
+      fileData: fs.readFileSync(path.join(path.posix.resolve(), "tests/fixtures/ts-files/pipe.ts"), {
+        encoding: "utf8",
+        withFileTypes: true,
+      }),
+    },
+    {
       type: "COMPONENT",
       filePath: path.join(path.posix.resolve(), "tests/fixtures/ts-files/var.ts"),
       fileData: fs.readFileSync(path.join(path.posix.resolve(), "tests/fixtures/ts-files/var.ts"), {
