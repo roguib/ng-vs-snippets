@@ -34,7 +34,7 @@ export const generator = (files: Array<File>, outputPath: string): void => {
       ++index;
     }
     component.body = [`<${file.prefix}` + inputs + outputs + `></${file.prefix}>`];
-    json[file.componentName] = {
+    json[file.name] = {
       ...component,
     };
   }

@@ -26,6 +26,11 @@ export const parser = (data: Array<IFileData>): Array<File> => {
           tmp.push(parsedData);
         }
         break;
+      case "PIPE":
+        parsedData = parsePipeDefinition(item);
+        if (parsedData) {
+          tmp.push(parsedData);
+        }
       default:
         parsedData = parseComponentDefinition(item);
         if (parsedData) {
@@ -83,6 +88,43 @@ const parseClassDefinition = (file: IFileData): Partial<File> | undefined => {
 
 /**
  * @private
+ * @param {IFIleData} file A file that is PIPE type
+ * @returns {string | undefined} A token with the data extracted from the class definition file. Each parameter
+ * of the transform function is parsed as an input. Hence, this function returns an object with inputs arrays defined
+ * and without outputs
+ */
+const parsePipeDefinition = (file: IFileData): Partial<File> | undefined => {
+  const pipeAnnotation: Array<string> = file.fileData?.match(/\@Pipe\(\{name\:(\s+|)\'[A-Za-z0-9]+\'\}\)/g) || [];
+  if (pipeAnnotation.length === 0) {
+    logger.warn("Pipe does not have a defined name.");
+    return undefined;
+  }
+
+  // we consider only one pipe per file
+  const prefixArray: Array<string> = pipeAnnotation[0].match(/name\:(\s+|)\'[A-Za-z0-9]+\'/g) || [];
+  const prefix = prefixArray[0].split(':')[1];
+  logger.log("Prefix of the pipe:", prefix);
+
+  const nameArray: Array<string> = pipeAnnotation[0].match(/export(\s+)class(\s+)[A-Za-z0-9]+/g) || [];
+  const name: string = nameArray[0].split(" ")[2];
+  logger.log("Name of the pipe:", name);
+
+  //TODO:
+  let transformFunc: Array<string> = file.fileData?.match(/transform\([A-Za-z0-9\:\,\_\-]+\)/g) || [];
+
+  const extendedClassFilepath = parseExtendedClassPath(file);
+
+  return {
+    filePath: file.filePath,
+    prefix,
+    name,
+    // TODO: inputs,
+    extendedClassFilepath,
+  };
+};
+
+/**
+ * @private
  * @param {IFIleData} file A file that is COMPONENT type
  * @returns {string | undefined} A token with the data extracted from the class definition file
  */
@@ -104,7 +146,7 @@ const parseComponentDefinition = (file: IFileData): File | undefined => {
   return {
     filePath: file.filePath,
     prefix,
-    componentName,
+    name: componentName,
     inputs,
     outputs,
     extendedClassFilepath,

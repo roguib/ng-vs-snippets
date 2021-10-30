@@ -6,7 +6,7 @@ test("JSON file generation", async () => {
   generator.generator(
     [
       {
-        componentName: "MainComponent",
+        name: "MainComponent",
         prefix: "app-main",
         inputs: [
           { inputName: "appName", type: "MediaModel" },

@@ -1,7 +1,7 @@
 export interface File {
   filePath: string;
   prefix: string;
-  componentName: string;
+  name: string;
   inputs: Array<Input>;
   outputs: Array<Output>;
   extendedClassFilepath: string | undefined;

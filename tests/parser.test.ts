@@ -11,7 +11,7 @@ test("Parses the contents of the candidate files and returns an array of File ty
   process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "/tests/fixtures/parser");
   const result = [
     {
-      componentName: "MainComponent",
+      name: "MainComponent",
       extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/base.component.ts"),
       filePath: path.join(path.posix.resolve(), "/tests/fixtures/parser/main.component.ts"),
       inputs: [
@@ -169,7 +169,7 @@ test("Tests the parser when the file is imported using the @ special keyword pat
   process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "/tests/fixtures/parser");
   const result = [
     {
-      componentName: "SpecialPathComponent",
+      name: "SpecialPathComponent",
       extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-base.component.ts"),
       filePath: path.join(path.posix.resolve(), "/tests/fixtures/parser/special-path-tsconfig/special-path.component.ts"),
       inputs: [
@@ -263,7 +263,7 @@ test("Tests the parser with a component that doesn't contain inputs or outputs b
   process.env.ROOT_PROJECT_PATH = path.join(path.posix.resolve(), "tests/fixtures/parser");
   const result: any = [
     {
-      componentName: "noInputsOrOutputsComponent",
+      name: "noInputsOrOutputsComponent",
       extendedClassFilepath: path.join(path.posix.resolve(), "/tests/fixtures/parser/base.component.ts"),
       filePath: path.join(path.posix.resolve(), "/tests/fixtures/parser/noInputsOrOutputs.component.ts"),
       inputs: [

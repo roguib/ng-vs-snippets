@@ -24,7 +24,7 @@ public parser(filePaths: Array<string>): Array<File>
 interface File {
   fileLocation: string;
   prefix: string;
-  componentName: string;
+  name: string;
   inputs: Array<Input>;
   outputs: Array<Output>;
 }
