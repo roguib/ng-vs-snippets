@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1633792879695,
+  "lastUpdate": 1635579488224,
   "repoUrl": "https://github.com/roguib/ng-vs-snippets",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -79,6 +79,37 @@ window.BENCHMARK_DATA = {
             "name": "Jest test suite",
             "value": 0.47,
             "range": "±39.62%",
+            "unit": "ops/sec",
+            "extra": "7 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "30463479+roguib@users.noreply.github.com",
+            "name": "Roger Guasch",
+            "username": "roguib"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "1ac4665cd4df479c7ba81c5100935bc7e8a04a1f",
+          "message": "Merge pull request #26 from roguib/benchmark\n\nBenchmark",
+          "timestamp": "2021-10-30T09:36:52+02:00",
+          "tree_id": "e4d9edafc5b27fb4b0be618e80d0d0e13a0fb47f",
+          "url": "https://github.com/roguib/ng-vs-snippets/commit/1ac4665cd4df479c7ba81c5100935bc7e8a04a1f"
+        },
+        "date": 1635579487719,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "Jest test suite",
+            "value": 0.39,
+            "range": "±40.23%",
             "unit": "ops/sec",
             "extra": "7 samples"
           }
