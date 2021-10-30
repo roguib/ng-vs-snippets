@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1635581538589,
+  "lastUpdate": 1635582074189,
   "repoUrl": "https://github.com/roguib/ng-vs-snippets",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -137,6 +137,37 @@ window.BENCHMARK_DATA = {
             "name": "Jest test suite",
             "value": 0.4,
             "range": "±39.90%",
+            "unit": "ops/sec",
+            "extra": "7 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "30463479+roguib@users.noreply.github.com",
+            "name": "Roger Guasch",
+            "username": "roguib"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "6d6d76e470fbf237983a07f92fb897fac568d132",
+          "message": "Merge pull request #30 from roguib/reader-pipes\n\nCloses #27. Modify the reader class to read pipe files",
+          "timestamp": "2021-10-30T10:19:57+02:00",
+          "tree_id": "fb3592ae359250827120affe2a991a1b59414fe9",
+          "url": "https://github.com/roguib/ng-vs-snippets/commit/6d6d76e470fbf237983a07f92fb897fac568d132"
+        },
+        "date": 1635582073734,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "Jest test suite",
+            "value": 0.39,
+            "range": "±39.34%",
             "unit": "ops/sec",
             "extra": "7 samples"
           }
