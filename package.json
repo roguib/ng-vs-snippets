@@ -23,12 +23,16 @@
     "build:cjs": "rollup -c",
     "check": "tsc",
     "run": "node ./build/@roguib/ng-vs-snippets.js",
-    "test": "npm run build:cjs && jest ./tests/*",
+    "test": "jest ./tests/* --reporters=jest-standard-reporter",
+    "benchmarks": "tsc tests/benchmarks/benchmarks.ts && node tests/benchmarks/benchmarks.js",
     "auto-publish": "tsc scripts/auto-publish.ts && node scripts/auto-publish.js",
-    "prettier": "prettier"
+    "prettier": "prettier",
+    "test-command": "cd tests/benchmarks && jest ../*"
   },
   "dependencies": {
     "@types/jest": "^26.0.24",
+    "benchmark": "^2.1.4",
+    "jest-standard-reporter": "^2.0.0",
     "prettier": "^2.3.2",
     "rollup": "^2.56.2",
     "rollup-plugin-add-shebang": "^0.3.1",

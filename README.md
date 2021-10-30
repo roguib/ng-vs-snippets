@@ -51,6 +51,10 @@ Sometimes, due to VS Code configuration issues, snippets don't appear in the sug
 
 If this doesn't fix the problem, open the command palette and search for `Preferences: Configure User Snippets` to ensure the editor is considering the fille where your generated snippets are defined.
 
+## Benchmarking
+
+This project uses [benchmark.js](https://benchmarkjs.com/) and [Continuous Benchmark workflow](https://github.com/marketplace/actions/continuous-benchmark) to run benchmarking tests. You may check out the results in the following [GitHub page](https://roguib.github.io/ng-vs-snippets/dev/bench/).
+
 ## Documentation
 
 You can find the [full document design at this url]().

@@ -9,16 +9,12 @@ const iterator = rl[Symbol.asyncIterator]();
 const prettier = require("prettier");
 const exec = util.promisify(require("child_process").exec);
 
-const execute = (
-  command: string
-): Promise<{ stdout: string; stderr; string }> => {
+const execute = (command: string): Promise<{ stdout: string; stderr; string }> => {
   return exec(command);
 };
 
 const autoPublish = async (): Promise<void> => {
-  console.log(
-    "Welcome to autopublish. This script walks you through the process of publishing the library to npm."
-  );
+  console.log("Welcome to autopublish. This script walks you through the process of publishing the library to npm.");
   console.log("Choose which type of version you want to publish:");
   console.log("1- Major version (X.0.0) (M)");
   console.log("1- Minor version (0.X.0) (m)");
@@ -29,9 +25,7 @@ const autoPublish = async (): Promise<void> => {
     console.log("Choose the version (M/m/p)");
     version = await iterator.next();
     if (version.value != "M" && version.value != "m" && version.value != "p") {
-      throw Error(
-        "Published version should be Major(M) / Minor(m) / Patch(p). Aborting."
-      );
+      throw Error("Published version should be Major(M) / Minor(m) / Patch(p). Aborting.");
     }
   } catch (error) {
     throw error;
@@ -48,9 +42,7 @@ const autoPublish = async (): Promise<void> => {
       })
     );
   } catch (error) {
-    console.log(
-      "An error has occured while trying to read package.json file. Aborting."
-    );
+    console.log("An error has occured while trying to read package.json file. Aborting.");
     throw error;
   }
 
@@ -84,9 +76,7 @@ const autoPublish = async (): Promise<void> => {
       }
     );
   } catch (error) {
-    console.log(
-      "An error has occured while trying to update package.json file. Aborting."
-    );
+    console.log("An error has occured while trying to update package.json file. Aborting.");
     throw error;
   }
 
@@ -116,3 +106,5 @@ const autoPublish = async (): Promise<void> => {
 };
 
 autoPublish();
+
+export {};
