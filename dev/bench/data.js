@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1635579488224,
+  "lastUpdate": 1635581538589,
   "repoUrl": "https://github.com/roguib/ng-vs-snippets",
   "entries": {
     "Benchmark.js Benchmark": [
@@ -110,6 +110,33 @@ window.BENCHMARK_DATA = {
             "name": "Jest test suite",
             "value": 0.39,
             "range": "±40.23%",
+            "unit": "ops/sec",
+            "extra": "7 samples"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "roguib",
+            "username": "roguib"
+          },
+          "committer": {
+            "name": "roguib",
+            "username": "roguib"
+          },
+          "id": "ec1c6297519e6a09a179b333ab6ffe49cd540101",
+          "message": "Closes #27. Modify the reader class to read pipe files",
+          "timestamp": "2021-10-30T07:36:57Z",
+          "url": "https://github.com/roguib/ng-vs-snippets/pull/30/commits/ec1c6297519e6a09a179b333ab6ffe49cd540101"
+        },
+        "date": 1635581537734,
+        "tool": "benchmarkjs",
+        "benches": [
+          {
+            "name": "Jest test suite",
+            "value": 0.4,
+            "range": "±39.90%",
             "unit": "ops/sec",
             "extra": "7 samples"
           }
